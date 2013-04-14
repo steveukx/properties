@@ -1,0 +1,21 @@
+{
+   "name": "properties-reader",
+   "description": "Properties file reader for Node.js",
+   "version": "0.0.1",
+   "author": { "name": "Steve King", "email": "steve@mydev.co" },
+   "contributors": [ { "name": "Steve King", "email": "steve@mydev.co" } ],
+   "dependencies": {
+   },
+   "devDependencies": {
+   },
+   "keywords": [ "properties", "ini", "parser"],
+   "repository": { "type": "git", "url": "git://github.com/steveukx/properties" },
+   "main": "src/PropertiesReader",
+   "bin": {},
+   "scripts": {
+   },
+   "config": {},
+   "engines": {
+      "node": ">= 0.4.1"
+   }
+}
