@@ -13,8 +13,35 @@
    function PropertiesReader(sourceFile) {
       this._properties = {};
       this._propertiesExpanded = {};
-      sourceFile && fs.readFileSync(sourceFile, 'utf-8').split('\n').forEach(this._addProperty, this);
+      sourceFile && this.read(fs.readFileSync(sourceFile, 'utf-8'));
    }
+
+   /**
+    * Gets the number of properties that have been read into this PropertiesReader.
+    *
+    * @name PropertiesReader#length
+    * @type {Number}
+    */
+   Object.defineProperty(PropertiesReader.prototype, 'length', {
+      configurable: false,
+      get: function() {
+         return Object.keys(this._properties).length;
+      },
+      set: function() {
+         throw new Error("Cannot set length of PropertiesReader properties");
+      }
+   });
+
+   /**
+    * Reads any string input into the PropertiesReader
+    *
+    * @param {String} input
+    * @return {PropertiesReader} this instance
+    */
+   PropertiesReader.prototype.read = function(input) {
+      ('' + input).split('\n').forEach(this._addProperty, this);
+      return this;
+   };
 
    /**
     * Calls the supplied function for each property
@@ -31,7 +58,7 @@
    };
 
    PropertiesReader.prototype.get = function(key) {
-      return  this._properties[key] !== undefined ? this._properties[key] : null;
+      return this._properties.hasOwnProperty(key) ? this._properties[key] : null;
    };
 
    PropertiesReader.prototype.set = function(key, value) {
@@ -46,16 +73,22 @@
    PropertiesReader.prototype._addProperty = function(propertyString) {
       if(!!propertyString.trim()) {
          var property = propertyString.split('=', 2);
+         var key = property[0].trim();
          var value = property[1];
+
          if(!isNaN(value)) {
             value = +value;
          }
          else if(value == 'true' || value == 'false') {
             value = (value == 'true');
          }
-         this._properties[property[0]] = value;
+         else {
+            value = ('' + value).trim();
+         }
 
-         var expanded = property[0].split('.');
+         this._properties[key] = value;
+
+         var expanded = key.split('.');
          var source = this._propertiesExpanded;
          while(expanded.length > 1) {
             var step = expanded.shift();
