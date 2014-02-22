@@ -1,23 +1,39 @@
 {
-   "name": "properties-reader",
-   "description": "Properties file reader for Node.js",
-   "version": "0.0.4",
-   "author": { "name": "Steve King", "email": "steve@mydev.co" },
-   "contributors": [ { "name": "Steve King", "email": "steve@mydev.co" } ],
-   "dependencies": {
-   },
-   "devDependencies": {
-      "unit-test": "*"
-   },
-   "keywords": [ "properties", "ini", "parser"],
-   "repository": { "type": "git", "url": "git://github.com/steveukx/properties" },
-   "main": "src/PropertiesReader",
-   "bin": {},
-   "scripts": {
-      "test": "node test/runner.js"
-   },
-   "config": {},
-   "engines": {
-      "node": ">= 0.4.1"
-   }
+  "name": "properties-reader",
+  "description": "Properties file reader for Node.js",
+  "version": "0.0.5",
+  "author": {
+    "name": "Steve King",
+    "email": "steve@mydev.co"
+  },
+  "contributors": [
+    {
+      "name": "Steve King",
+      "email": "steve@mydev.co"
+    }
+  ],
+  "dependencies": {
+    "mkdirp": "~0.3.5"
+  },
+  "devDependencies": {
+    "unit-test": "*"
+  },
+  "keywords": [
+    "properties",
+    "ini",
+    "parser"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/steveukx/properties"
+  },
+  "main": "src/PropertiesReader",
+  "bin": {},
+  "scripts": {
+    "test": "node test/runner.js"
+  },
+  "config": {},
+  "engines": {
+    "node": ">= 0.4.1"
+  }
 }
