@@ -17,7 +17,7 @@ function givenFilePropertiesReader(content) {
    properties = propertiesReader(tempFile.files[tempFile.files.length - 1]);
 }
 
-module.exports = new TestCase("Repeat Calls", {
+module.exports = new TestCase("Reader", {
 
    setUp: function() {
    },
