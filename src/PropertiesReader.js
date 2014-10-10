@@ -78,7 +78,9 @@
      */
     PropertiesReader.prototype.each = function(fn, scope) {
         for (var key in this._properties) {
-            fn.call(scope, key, this._properties[key]);
+            if (this._properties.hasOwnProperty(key)) {
+                fn.call(scope, key, this._properties[key]);
+            }
         }
         return this;
     };
@@ -91,6 +93,25 @@
      * @return {*}
      */
     PropertiesReader.prototype.get = function(key) {
+        var parsedValue = this.getRaw(key);
+
+        if (parsedValue !== null && !isNaN(parsedValue)) {
+            parsedValue = +parsedValue;
+        }
+        else if (parsedValue === 'true' || parsedValue === 'false') {
+            parsedValue = (parsedValue === 'true');
+        }
+
+        return parsedValue;
+    };
+
+    /**
+     * Gets the string representation as it was read from the properties file without coercions for type recognition.
+     *
+     * @param {string} key
+     * @returns {string}
+     */
+    PropertiesReader.prototype.getRaw = function(key) {
         return this._properties.hasOwnProperty(key) ? this._properties[key] : null;
     };
 
@@ -103,16 +124,7 @@
      * @return {PropertiesReader}
      */
     PropertiesReader.prototype.set = function(key, value) {
-        var parsedValue;
-        if (!isNaN(value)) {
-            parsedValue = +value;
-        }
-        else if (value == 'true' || value == 'false') {
-            parsedValue = (value == 'true');
-        }
-        else {
-            parsedValue = ('' + value).trim();
-        }
+        var parsedValue = ('' + value).trim();
 
         this._properties[key] = parsedValue;
 

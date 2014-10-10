@@ -37,6 +37,30 @@ module.exports = new TestCase("Reader", {
       Assertions.assertEquals('Value', properties.get('some.property'), 'Values are read into the properties object');
    },
 
+   'test Attempts type coercion': function() {
+      givenFilePropertiesReader(
+            'a = 123\n' +
+            'b = true\n' +
+            'c = false\n' +
+            'd = 0.1');
+      Assertions.assertEquals(true, properties.get('b'), 'creates boolean true');
+      Assertions.assertEquals(false, properties.get('c'), 'creates boolean false');
+      Assertions.assertEquals(123, properties.get('a'), 'creates integer');
+      Assertions.assertEquals(0.1, properties.get('d'), 'creates float');
+   },
+
+   'test Allows access to non-parsed values': function() {
+      givenFilePropertiesReader(
+            'a = 123\n' +
+            'b = true\n' +
+            'c = false\n' +
+            'd = 0.1');
+      Assertions.assertEquals('true', properties.getRaw('b'), 'creates boolean true');
+      Assertions.assertEquals('false', properties.getRaw('c'), 'creates boolean false');
+      Assertions.assertEquals('123', properties.getRaw('a'), 'creates integer');
+      Assertions.assertEquals('0.1', properties.getRaw('d'), 'creates float');
+   },
+
    'test Properties are trimmed when parsed': function() {
       givenFilePropertiesReader('some.property =Value   \nfoo.bar = A Value');
 
@@ -48,8 +72,7 @@ module.exports = new TestCase("Reader", {
       givenFilePropertiesReader('\n\nsome.property=Value\n\nfoo.bar = A Value');
 
       Assertions.assertEquals(properties.length, 2, 'Blank lines are not stored as properties');
-   }
-   ,
+   },
 
    'test Properties can be read back via their dot notation names': function() {
       givenFilePropertiesReader('\n\nsome.property=Value\n\nfoo.bar = A Value');
