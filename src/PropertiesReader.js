@@ -86,6 +86,21 @@
     };
 
     /**
+     * Given the supplied raw value, returns the parsed value
+     */
+    PropertiesReader.prototype._parsed = function(value) {
+        var parsedValue = value;
+        if (value !== null && !isNaN(value)) {
+            parsedValue = +value;
+        }
+        else if (value === 'true' || value === 'false') {
+            parsedValue = (value === 'true');
+        }
+
+        return parsedValue;
+    };
+
+    /**
      * Gets a single property value based on the full string key. When the property is not found in the PropertiesReader,
      * the return value will be null.
      *
@@ -93,16 +108,7 @@
      * @return {*}
      */
     PropertiesReader.prototype.get = function(key) {
-        var parsedValue = this.getRaw(key);
-
-        if (parsedValue !== null && !isNaN(parsedValue)) {
-            parsedValue = +parsedValue;
-        }
-        else if (parsedValue === 'true' || parsedValue === 'false') {
-            parsedValue = (parsedValue === 'true');
-        }
-
-        return parsedValue;
+        return this._parsed(this.getRaw(key));
     };
 
     /**
