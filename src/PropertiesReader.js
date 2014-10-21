@@ -167,6 +167,51 @@
         return propertiesReader;
     };
 
+    /**
+     * Binds the current properties object and all values in it to the supplied express app.
+     *
+     * @param {Object} app The express app (or any object that has a `set` function)
+     * @param {String} [basePath] The absolute prefix to use for all path properties - defaults to the cwd.
+     * @param {Boolean} [makePaths=false] When true will attempt to create the directory structure to any path property
+     */
+    PropertiesReader.prototype.bindToExpress = function(app, basePath, makePaths) {
+        var Path = require('path');
+
+        if (!/\/$/.test(basePath = basePath || process.cwd())) {
+            basePath += '/';
+        }
+
+        this.each(function (key, value) {
+            if (value && /\.(path|dir)$/.test(key)) {
+                value = Path.join(basePath, Path.relative(basePath, value));
+                this.set(key, value);
+
+                try {
+                    var directoryPath = /dir$/.test(key) ? value : Path.dirname(value);
+                    if (makePaths) {
+                        require('mkdirp').sync(directoryPath);
+                    }
+                    else if (!require('fs').statSync(directoryPath).isDirectory()) {
+                        throw new Error("Path is not a directory that already exists");
+                    }
+                }
+                catch (e) {
+                    throw new Error("Unable to create directory " + value);
+                }
+            }
+
+            app.set(key, this.get(key));
+
+            if(/^browser\./.test(key)) {
+                app.locals[key.substr(8)] = this.get(key);
+            }
+        }, this);
+
+        app.set('properties', this);
+
+        return this;
+    };
+
     PropertiesReader.builder = function(sourceFile) {
         return new PropertiesReader(sourceFile);
     };
