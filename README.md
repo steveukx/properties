@@ -61,6 +61,12 @@ value.
 
 When duplicate names are found in the properties, the first one read will be replaced with the later one.
 
+Data Types
+==========
+
+Properties will automatically be converted to their regular data types when they represent true/false or numeric
+values. To get the original value without any parsing / type coercion applied, use `properties.getRaw('path.to.prop')`.
+
 Contributions
 =============
 
