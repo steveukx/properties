@@ -96,6 +96,12 @@
         else if (value === 'true' || value === 'false') {
             parsedValue = (value === 'true');
         }
+        else {
+            var replacements = {'\\n': '\n', '\\r': '\r', '\\t': '\t'};
+            parsedValue = value.replace(/\\[nrt]/g, function (key) {
+                return replacements[key];
+            });
+        }
 
         return parsedValue;
     };

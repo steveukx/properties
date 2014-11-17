@@ -103,5 +103,17 @@ module.exports = new TestCase("Reader", {
       Assertions.assert(app.set.withArgs('properties', properties).calledOnce, 'The complete properties object should be set as "properties"');
       Assertions.assert(app.set.withArgs('some.property', 'Value').calledOnce, 'Sets all properties');
       Assertions.assert(app.set.withArgs('foo.bar', 'A Value').calledOnce, 'Sets all properties');
+   },
+
+   'test Permits escaped new line characters': function () {
+       var properties = givenFilePropertiesReader('\n\nsome.property= Multi\\n Line \\nString \nfoo.bar = A Value');
+
+       // parsed access modifies the new line characters
+       Assertions.assertEquals(properties.get('foo.bar'), 'A Value', 'Sets all properties');
+       Assertions.assertEquals(properties.get('some.property'), 'Multi\n Line \nString', 'Sets all properties');
+
+       // raw access does not modify the new line characters
+       Assertions.assertEquals(properties.getRaw('some.property'), 'Multi\\n Line \\nString', 'Sets all properties');
+       Assertions.assertEquals(properties.path().some.property, 'Multi\\n Line \\nString', 'Sets all properties');
    }
 });
