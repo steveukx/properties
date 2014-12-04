@@ -1,7 +1,7 @@
 {
   "name": "properties-reader",
   "description": "Properties file reader for Node.js",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": {
     "name": "Steve King",
     "email": "steve@mydev.co"
@@ -32,7 +32,7 @@
   "scripts": {
     "test": "node test/runner.js"
   },
-  "config": {},
+  "license": "MIT",
   "engines": {
     "node": ">= 0.4.1"
   }
