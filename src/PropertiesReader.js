@@ -96,7 +96,7 @@
         else if (value === 'true' || value === 'false') {
             parsedValue = (value === 'true');
         }
-        else {
+        else if (typeof value === "string") {
             var replacements = {'\\n': '\n', '\\r': '\r', '\\t': '\t'};
             parsedValue = value.replace(/\\[nrt]/g, function (key) {
                 return replacements[key];

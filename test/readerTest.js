@@ -115,5 +115,13 @@ module.exports = new TestCase("Reader", {
        // raw access does not modify the new line characters
        Assertions.assertEquals(properties.getRaw('some.property'), 'Multi\\n Line \\nString', 'Sets all properties');
        Assertions.assertEquals(properties.path().some.property, 'Multi\\n Line \\nString', 'Sets all properties');
+   },
+
+   'test Returns null when getting a missing property': function () {
+       var properties = givenFilePropertiesReader('prop = value');
+
+       // parsed access modifies the new line characters
+       Assertions.assertEquals(properties.get('prop'), 'value', 'Gets values that are present');
+       Assertions.assertEquals(properties.get('missing'), null, 'Gets null for values that are missing');
    }
 });
