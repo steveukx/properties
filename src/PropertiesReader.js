@@ -79,7 +79,7 @@
     PropertiesReader.prototype.each = function(fn, scope) {
         for (var key in this._properties) {
             if (this._properties.hasOwnProperty(key)) {
-                fn.call(scope, key, this._properties[key]);
+                fn.call(scope || this, key, this._properties[key]);
             }
         }
         return this;

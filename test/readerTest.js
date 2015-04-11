@@ -52,6 +52,26 @@ module.exports = new TestCase("Reader", {
       Assertions.assertEquals('Value', properties.get('some.property'), 'Values are read into the properties object');
    },
 
+   'test Runs a function across all items in the reader': function() {
+      givenFilePropertiesReader(
+          'a = 123\n' +
+          'b = true\n'
+      );
+      var spy, scope = {some: 'thing'};
+
+      properties.each(spy = Sinon.spy());
+
+      Assertions.assertEquals(2, spy.callCount, 'Called for each item');
+      Assertions.assert(spy.calledWith('a', '123'));
+      Assertions.assert(spy.calledWith('b', 'true'));
+      Assertions.assert(spy.alwaysCalledOn(properties));
+
+      properties.each(spy = Sinon.spy(), scope);
+
+      Assertions.assertEquals(2, spy.callCount, 'Called for each item');
+      Assertions.assert(spy.alwaysCalledOn(scope));
+   },
+
    'test Attempts type coercion': function() {
       givenFilePropertiesReader(
             'a = 123\n' +
