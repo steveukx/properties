@@ -37,6 +37,14 @@
             throw new Error("Cannot set length of PropertiesReader properties");
         }
     });
+    
+    /**
+     * Append a file to the properties into the PropertiesReader
+     * @param sourcefile
+     */
+    PropertiesReader.prototype.append = function(sourceFile){
+        sourceFile && this.read(fs.readFileSync(sourceFile, 'utf-8'));
+    }
 
     /**
      * Reads any string input into the PropertiesReader
