@@ -29,11 +29,15 @@ notation, they can be access as an object:
     // by object path
     var property = properties.path().some.property.name;
 
-To read more than one file, chain calls to the `.read()` method:
+To read more than one file, chain calls to the `.append()` method:
 
-    properties.read('/another.file').read('/yet/another.file');
+    properties.append('/another.file').append('/yet/another.file');
 
-To set an arbitrary property into the properties object, use `.set()`:
+To read properties from a string, use the `.read()` method:
+
+    properties.read('some.property = Value \n another.property = Another Value');
+
+To set a single property into the properties object, use `.set()`:
 
     properties.set('property.name', 'Property Value');
 

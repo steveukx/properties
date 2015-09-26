@@ -13,7 +13,7 @@
     function PropertiesReader(sourceFile) {
         this._properties = {};
         this._propertiesExpanded = {};
-        sourceFile && this.read(fs.readFileSync(sourceFile, 'utf-8'));
+        this.append(sourceFile);
     }
 
     /**
@@ -30,6 +30,7 @@
      */
     Object.defineProperty(PropertiesReader.prototype, 'length', {
         configurable: false,
+        enumerable: false,
         get: function() {
             return Object.keys(this._properties).length;
         },
@@ -37,14 +38,18 @@
             throw new Error("Cannot set length of PropertiesReader properties");
         }
     });
-    
+
     /**
      * Append a file to the properties into the PropertiesReader
-     * @param sourcefile
+     * @param {string} sourceFile
+     * @return {PropertiesReader} this instance
      */
-    PropertiesReader.prototype.append = function(sourceFile){
-        sourceFile && this.read(fs.readFileSync(sourceFile, 'utf-8'));
-    }
+    PropertiesReader.prototype.append = function (sourceFile) {
+        if (sourceFile) {
+            this.read(fs.readFileSync(sourceFile, 'utf-8'));
+        }
+        return this;
+    };
 
     /**
      * Reads any string input into the PropertiesReader
