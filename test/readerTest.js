@@ -52,6 +52,16 @@ module.exports = new TestCase("Reader", {
       Assertions.assertEquals('Value', properties.get('some.property'), 'Values are read into the properties object');
    },
 
+   'test Merges multiple files': function() {
+      givenFilePropertiesReader('some.property=Value');
+
+      tempFile('[section]\nsome.property=Another Value');
+      properties.append(tempFile.files[tempFile.files.length - 1]);
+
+      Assertions.assertEquals('Another Value', properties.get('section.some.property'), 'Uses sections in any of the appended content');
+      Assertions.assertEquals('Value', properties.get('some.property'), 'Values are read into the properties object');
+   },
+
    'test Runs a function across all items in the reader': function() {
       givenFilePropertiesReader(
           'a = 123\n' +
