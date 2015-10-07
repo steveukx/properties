@@ -10,10 +10,15 @@
     {
       "name": "Steve King",
       "email": "steve@mydev.co"
+    },
+    {
+      "name": "Aureliano Bergese",
+      "email": "onailerua@hotmail.coom"
     }
   ],
   "dependencies": {
-    "mkdirp": "~0.3.5"
+    "mkdirp": "~0.3.5",
+    "string": "~3.3.1"
   },
   "devDependencies": {
     "unit-test": "*"
