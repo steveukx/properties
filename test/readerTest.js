@@ -144,4 +144,25 @@ module.exports = new TestCase("Reader", {
        Assertions.assertEquals(properties.get('prop'), 'value', 'Gets values that are present');
        Assertions.assertEquals(properties.get('missing'), null, 'Gets null for values that are missing');
    }
+   
+   'test getByRoot when getting a bunch of objects': function() {
+        givenFilePropertiesReader(
+            'root.sect.a = 1\n' +
+            'root.sect.b = bar\n' +
+            'root.path.b = true\n' +
+            'root.path.c = false\n' +
+            'root.path.d = 0.1');
+
+        var sect = {};
+        sect.a=1;
+        sect.b='bar';
+
+        Assertions.assertEquals(true, properties.getByRoot('root.path').b, "fetch an object of the right type");
+        Assertions.assertEquals(false,properties.getByRoot('root.path').c, "fetch an object of the right type");
+
+        var getSect = properties.getByRoot('root.sect')
+        Assertions.assertEquals(sect.a,getSect.a, "fetch an entire object");
+        Assertions.assertEquals(sect.b,getSect.b, "fetch an entire object");
+
+   }
 });
