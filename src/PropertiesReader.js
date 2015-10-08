@@ -3,6 +3,7 @@
     "use strict";
 
     var fs = require('fs');
+    var AdvancedString = require('string');
 
     /**
      *
@@ -185,6 +186,29 @@
 
         return propertiesReader;
     };
+    
+       /**
+     * return a json from a root propertiess
+     * @param root
+     * @returns {{}}
+     */
+    PropertiesReader.prototype.getByRoot = function(root){
+        var keys = Object.keys(this._properties);
+        var outObj = {};
+        for (var i=0; i<keys.length; i++){
+            var key = keys[i];
+            //console.log(key);
+            var stringKey = AdvancedString(key);
+            if(stringKey && stringKey.startsWith(root)){
+                var postfixKey = stringKey.chompLeft(root);
+                postfixKey = postfixKey.chompLeft('.');
+                var value = this.get(key);
+                outObj[postfixKey]=value;
+            }
+        }
+
+        return outObj;
+    }
 
     /**
      * Binds the current properties object and all values in it to the supplied express app.
