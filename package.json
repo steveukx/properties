@@ -1,7 +1,7 @@
 {
   "name": "properties-reader",
   "description": "Properties file reader for Node.js",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "author": {
     "name": "Steve King",
     "email": "steve@mydev.co"
@@ -17,8 +17,7 @@
     }
   ],
   "dependencies": {
-    "mkdirp": "~0.3.5",
-    "string": "~3.3.1"
+    "mkdirp": "~0.3.5"
   },
   "devDependencies": {
     "unit-test": "*"
