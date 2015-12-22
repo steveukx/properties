@@ -183,6 +183,11 @@
         return this._propertiesExpanded;
     };
 
+    /**
+     * Gets the object that represents all properties.
+     * 
+     * @returns {{}|*}
+     */
     PropertiesReader.prototype.allProperties = function() {
         return this._properties;
     };
