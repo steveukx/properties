@@ -70,7 +70,7 @@
     PropertiesReader.prototype._readLine = function(propertyString) {
         if (!!(propertyString = propertyString.trim())) {
             var section = /^\[([^=]+)\]$/.exec(propertyString);
-            var property = !section && /^([^=]+)(={0,1})(.*)$/.exec(propertyString);
+            var property = !section && /^([^#=]+)(={0,1})(.*)$/.exec(propertyString);
 
             if (section) {
                 this._section = section[1];
@@ -120,8 +120,8 @@
     };
 
     /**
-     * Gets a single property value based on the full string key. When the property is not found in the PropertiesReader,
-     * the return value will be null.
+     * Gets a single property value based on the full string key. When the property is not found in the
+     * PropertiesReader, the return value will be null.
      *
      * @param {String} key
      * @return {*}
@@ -157,9 +157,17 @@
         var source = this._propertiesExpanded;
         while (expanded.length > 1) {
             var step = expanded.shift();
+            if (expanded.length >= 1 && typeof source[step] === 'string') {
+                source[step] = {'':source[step]};
+            }
             source = (source[step] = source[step] || {});
         }
-        source[expanded[0]] = parsedValue;
+        if (typeof parsedValue === 'string' && typeof  source[expanded[0]] === 'object') {
+            source[expanded[0]][''] = parsedValue;
+        }
+        else {
+            source[expanded[0]] = parsedValue;
+        }
 
         return this;
     };

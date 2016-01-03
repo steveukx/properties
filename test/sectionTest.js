@@ -32,6 +32,30 @@ module.exports = new TestCase("Section", {
         }
     },
 
+    'test Able to read file with sections that are already properties': function () {
+        givenFilePropertiesReader([
+           'some = thing',
+           'section = value',
+           '[section]',
+           'sub = property'
+        ].join('\n'));
+
+        Assertions.assertEquals(properties.get('section'), 'value', 'give precedence to the name');
+        Assertions.assertEquals(properties.get('section.sub'), 'property', 'gets the child property');
+        Assertions.assert(Sinon.match({'': 'value', 'sub': 'property'}).test(properties.path().section),
+           'gets an object with the empty string property equal to outer section value');
+    },
+
+    'test Ignores comment blocks': function () {
+        givenFilePropertiesReader([
+           'some = thing',
+           ' # section = value',
+           'section = another value'
+        ].join('\n'));
+
+        Assertions.assertEquals(properties.get('section'), 'another value', 'ignores the comment');
+    },
+
     'test Able to read from a file with sections': function() {
         givenFilePropertiesReader('some.property = Value\n\n' +
             '[section]\n another.property = Something\n\n' +
