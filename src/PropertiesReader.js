@@ -189,7 +189,7 @@
      * @returns {{}|*}
      */
     PropertiesReader.prototype.allProperties = function() {
-        return this._properties;
+        return JSON.parse(JSON.stringify(this._properties));
     };
 
     /**
