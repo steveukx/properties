@@ -184,6 +184,15 @@
     };
 
     /**
+     * Gets the object that represents all properties.
+     * 
+     * @returns {{}|*}
+     */
+    PropertiesReader.prototype.allProperties = function() {
+        return JSON.parse(JSON.stringify(this._properties));
+    };
+
+    /**
      * Creates and returns a new PropertiesReader based on the values in this instance.
      * @return {PropertiesReader}
      */
