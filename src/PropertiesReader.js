@@ -184,6 +184,19 @@
     };
 
     /**
+     * Gets the object that represents all properties.
+     *
+     * @returns {Object}
+     */
+    PropertiesReader.prototype.getAllProperties = function() {
+        var properties = {};
+        this.each(function (key, value) {
+            properties[key] = value;
+        });
+        return properties;
+    };
+
+    /**
      * Creates and returns a new PropertiesReader based on the values in this instance.
      * @return {PropertiesReader}
      */

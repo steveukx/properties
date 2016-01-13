@@ -209,5 +209,38 @@ module.exports = new TestCase("Reader", {
             c: false
          }
       ), "fetch an entire object");
+   },
+
+   'test getAllProperties returns properties map': function () {
+      givenFilePropertiesReader('\
+         root.a.b = Hello\n\
+         some.thing = Else\n\
+      ');
+
+      Assertions.assert(same(
+         properties.getAllProperties(),
+         {
+            'root.a.b': "Hello",
+            'some.thing': 'Else'
+         }
+      ), "fetch an entire object");
+   },
+
+   'test getAllProperties is immutable': function () {
+      givenFilePropertiesReader('\
+         root.a.b = Hello\n\
+         some.thing = Else\n\
+      ');
+
+      var allProperties = properties.getAllProperties();
+      allProperties['root.a.b'] = 'New Value';
+
+      Assertions.assert(same(
+         properties.getAllProperties(),
+         {
+            'root.a.b': "Hello",
+            'some.thing': 'Else'
+         }
+      ), "properties remain unchanged");
    }
 });
