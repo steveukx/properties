@@ -65,6 +65,9 @@ value.
 
 When duplicate names are found in the properties, the first one read will be replaced with the later one.
 
+To get the complete set of properties, either loop through them with the `.each((key, value) => {})` iterator or
+use the convenience method `getAllProperties` to return the complete set of flattened properties. 
+
 Data Types
 ==========
 

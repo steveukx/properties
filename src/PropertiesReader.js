@@ -185,11 +185,15 @@
 
     /**
      * Gets the object that represents all properties.
-     * 
-     * @returns {{}|*}
+     *
+     * @returns {Object}
      */
-    PropertiesReader.prototype.allProperties = function() {
-        return JSON.parse(JSON.stringify(this._properties));
+    PropertiesReader.prototype.getAllProperties = function() {
+        var properties = {};
+        this.each(function (key, value) {
+            properties[key] = value;
+        });
+        return properties;
     };
 
     /**
