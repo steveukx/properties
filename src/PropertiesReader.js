@@ -272,6 +272,38 @@
         return this;
     };
 
+    /**
+     * Stringify properties array
+     */
+    PropertiesReader.prototype._stringifyProperties = function() {
+      var lines = [];
+      var section = null;
+      this.each(function (key, value) {
+          var tokens = key.split(".");
+          if (tokens.length > 1) {
+            if (section !== tokens[0]) {
+              section = tokens[0];
+              lines.push("[" + section + "]");
+            }
+            key = tokens[1];
+          } else {
+            section = null;
+          }
+          lines.push(key + "=" + value);
+      });
+      return lines;
+    };
+
+    /**
+     * Write properties into the file
+     *
+     * @param {String} destFile
+     * @param {function} error callback
+     */
+    PropertiesReader.prototype.save = function(destFile, fail) {
+      fs.writeFile(destFile, this._stringifyProperties().join("\n"), fail);
+    };
+
     PropertiesReader.builder = function(sourceFile) {
         return new PropertiesReader(sourceFile);
     };
