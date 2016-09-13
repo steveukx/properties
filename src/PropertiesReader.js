@@ -273,7 +273,8 @@
     };
 
     /**
-     * Stringify properties array
+     * Stringify properties
+     * @returns {array} array of stringified properties
      */
     PropertiesReader.prototype._stringifyProperties = function() {
       var lines = [];
