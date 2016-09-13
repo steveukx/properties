@@ -82,6 +82,14 @@ module.exports = new TestCase("Writer", {
      properties.set('main.property', 'xxx');
      var propertiesStringsArray = properties._stringifyProperties();
      Assertions.assertEquals('[main]\nproperty=xxx', propertiesStringsArray.join('\n'), 'Output content inludes changes.');
+   },
+
+   'test Able to stringify properties after set with sections and dots': function () {
+     var inputContent = '[main]\nproperty.one=Value';
+     givenFilePropertiesReader(inputContent);
+     properties.set('main.property.one', 'xxx');
+     var propertiesStringsArray = properties._stringifyProperties();
+     Assertions.assertEquals('[main]\nproperty.one=xxx', propertiesStringsArray.join('\n'), 'Output content inludes changes with key with dot.');
    }
 
 });
