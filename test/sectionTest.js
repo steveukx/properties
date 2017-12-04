@@ -2,6 +2,7 @@ var Assertions = require('unit-test').Assertions,
     Sinon = require('unit-test').Sinon,
     TestCase = require('unit-test').TestCase,
     FileSystem = require('fs'),
+    noOp = function () {},
     propertiesReader = require('../src/PropertiesReader.js'),
     properties;
 
@@ -25,11 +26,28 @@ module.exports = new TestCase("Section", {
         while (tempFile.files && tempFile.files.length) {
             var filePath = tempFile.files.pop();
             try {
-                FileSystem.unlink(filePath);
+               FileSystem.unlink(filePath, noOp);
             }
             catch (e) {
             }
         }
+    },
+
+    'test Able to read URLs as part of a section': function () {
+       givenFilePropertiesReader(`
+[foo]
+base.api.url=http://blah.com
+
+[trade]
+base.api.url=http://google.com
+
+[another]
+thing = 123
+       `);
+
+       Assertions.assertEquals(properties.get('foo.base.api.url'), 'http://blah.com', 'url in first section');
+       Assertions.assertEquals(properties.get('trade.base.api.url'), 'http://google.com', 'url in second section');
+       Assertions.assertEquals(properties.get('another.thing'), 123, 'number in third section');
     },
 
     'test Able to read file with sections that are already properties': function () {

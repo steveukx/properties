@@ -251,7 +251,7 @@
                     if (makePaths) {
                         require('mkdirp').sync(directoryPath);
                     }
-                    else if (!require('fs').statSync(directoryPath).isDirectory()) {
+                    else if (!fs.statSync(directoryPath).isDirectory()) {
                         throw new Error("Path is not a directory that already exists");
                     }
                 }

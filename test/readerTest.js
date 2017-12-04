@@ -3,6 +3,7 @@ var Assertions = require('unit-test').Assertions;
 var Sinon = require('unit-test').Sinon;
 var TestCase = require('unit-test').TestCase;
 var FileSystem = require('fs');
+var noOp = function () {};
 var propertiesReader = require('../src/PropertiesReader.js');
 var properties;
 
@@ -52,7 +53,7 @@ module.exports = new TestCase("Reader", {
       while (tempFile.files && tempFile.files.length) {
          var filePath = tempFile.files.pop();
          try {
-            FileSystem.unlink(filePath);
+            FileSystem.unlink(filePath, noOp);
          }
          catch (e) {
          }
