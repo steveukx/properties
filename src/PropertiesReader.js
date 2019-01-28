@@ -7,13 +7,14 @@
     /**
      *
      * @param {String} sourceFile
+     * @param {String} encoding
      * @constructor
      * @name {PropertiesReader}
      */
-    function PropertiesReader(sourceFile) {
+    function PropertiesReader(sourceFile, encoding) {
         this._properties = {};
         this._propertiesExpanded = {};
-        this.append(sourceFile);
+        this.append(sourceFile, encoding);
     }
 
     /**
@@ -21,6 +22,18 @@
      * @ignore
      */
     PropertiesReader.prototype._section = '';
+
+    /**
+     * @type {String} The output to be written when updating properties
+     * @ignore
+     */
+    PropertiesReader.prototype._output = '';
+
+    /**
+     * @type {Array} The keys already updated in the output
+     * @ignore
+     */
+    PropertiesReader.prototype._updatedKeys = [];
 
     /**
      * Gets the number of properties that have been read into this PropertiesReader.
@@ -42,11 +55,12 @@
     /**
      * Append a file to the properties into the PropertiesReader
      * @param {string} sourceFile
+     * @param {String} encoding
      * @return {PropertiesReader} this instance
      */
-    PropertiesReader.prototype.append = function (sourceFile) {
+    PropertiesReader.prototype.append = function (sourceFile, encoding) {
         if (sourceFile) {
-            this.read(fs.readFileSync(sourceFile, 'utf-8'));
+            this.read(fs.readFileSync(sourceFile, encoding ? encoding : 'utf-8'));
         }
         return this;
     };
@@ -79,6 +93,53 @@
                 section = this._section ? this._section + '.' : '';
                 this.set(section + property[1].trim(), property[3].trim());
             }
+        }
+    };
+
+    /**
+     * Updates the sourceFile with the given properties string
+     * @param {string} destFile
+     * @param {String} encoding
+     * @return {PropertiesReader} this instance
+     */
+    PropertiesReader.prototype.update = function(destFile, encoding) {
+        var input = fs.readFileSync(destFile, encoding ? encoding : 'utf-8');
+        this._output = '';
+        ('' + input).split('\n').forEach(this._updateLine, this);
+        this.each((key, value) => { 
+            if (!this._updatedKeys.includes(key)) {
+                this._output = this._output + key + '=' + value + '\n';
+            }
+        });
+        // Se elimina el último retorno de carro
+        fs.writeFileSync(destFile, this._output.substring(0, this._output.length - 1), encoding);
+        return this;
+    };
+
+    /**
+     * Used as a processor for the array of input lines when updating to a dest file
+     * @param {String} propertyString
+     */
+    PropertiesReader.prototype._updateLine = function(propertyString) {
+        var updated = false;
+        if (!!(propertyString = propertyString.trim())) {
+            var section = /^\[([^=]+)\]$/.exec(propertyString);
+            var property = !section && /^([^#=]+)(={0,1})(.*)$/.exec(propertyString);
+            if (section) {
+                this._section = section[1];
+            } else if (property) {
+                section = this._section ? this._section + '.' : '';
+                var key = section + property[1].trim();
+                var newValue = this.get(key);
+                if (newValue != null && newValue != undefined) {
+                    updated = true;
+                    this._output = this._output + key + "=" + newValue + '\n';
+                    this._updatedKeys.push(key);
+                }
+            }
+        }
+        if (!updated) {
+            this._output += propertyString + '\n';
         }
     };
 
@@ -272,8 +333,8 @@
         return this;
     };
 
-    PropertiesReader.builder = function(sourceFile) {
-        return new PropertiesReader(sourceFile);
+    PropertiesReader.builder = function(sourceFile, encoding) {
+        return new PropertiesReader(sourceFile, encoding);
     };
 
     module.exports = PropertiesReader.builder;
