@@ -7,13 +7,14 @@
     /**
      *
      * @param {String} sourceFile
+     * @param {String} encoding
      * @constructor
      * @name {PropertiesReader}
      */
-    function PropertiesReader(sourceFile) {
+    function PropertiesReader(sourceFile, encoding) {
         this._properties = {};
         this._propertiesExpanded = {};
-        this.append(sourceFile);
+        this.append(sourceFile, encoding);
     }
 
     /**
@@ -42,11 +43,12 @@
     /**
      * Append a file to the properties into the PropertiesReader
      * @param {string} sourceFile
+     * @param {String} encoding
      * @return {PropertiesReader} this instance
      */
-    PropertiesReader.prototype.append = function (sourceFile) {
+    PropertiesReader.prototype.append = function (sourceFile, encoding) {
         if (sourceFile) {
-            this.read(fs.readFileSync(sourceFile, 'utf-8'));
+            this.read(fs.readFileSync(sourceFile, encoding ? encoding : 'utf-8'));
         }
         return this;
     };
@@ -272,8 +274,8 @@
         return this;
     };
 
-    PropertiesReader.builder = function(sourceFile) {
-        return new PropertiesReader(sourceFile);
+    PropertiesReader.builder = function(sourceFile, encoding) {
+        return new PropertiesReader(sourceFile, encoding);
     };
 
     module.exports = PropertiesReader.builder;
