@@ -115,6 +115,11 @@ module.exports = new TestCase("Reader", {
       Assertions.assertEquals(0.1, properties.get('d'), 'creates float');
    },
 
+   'test Correctly handles values that are nothing but whitespace': function () {
+      givenFilePropertiesReader('a =    \n');
+      Assertions.assertEquals('', properties.getRaw('a'), 'Whitespace is handled as an empty string');
+   },
+
    'test Allows access to non-parsed values': function () {
       givenFilePropertiesReader(
          'a = 123\n' +

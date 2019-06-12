@@ -103,7 +103,7 @@
      */
     PropertiesReader.prototype._parsed = function(value) {
         var parsedValue = value;
-        if (value !== null && !isNaN(value)) {
+        if (value !== null && value !== '' && !isNaN(value)) {
             parsedValue = +value;
         }
         else if (value === 'true' || value === 'false') {
