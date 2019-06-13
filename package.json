@@ -1,7 +1,7 @@
 {
   "name": "properties-reader",
   "description": "Properties file reader for Node.js",
-  "version": "0.0.15",
+  "version": "0.1.0",
   "author": {
     "name": "Steve King",
     "email": "steve@mydev.co"
@@ -17,7 +17,7 @@
     }
   ],
   "dependencies": {
-    "mkdirp": "~0.3.5"
+    "mkdirp": "~0.5.1"
   },
   "devDependencies": {
     "unit-test": "*"
@@ -32,12 +32,11 @@
     "url": "git://github.com/steveukx/properties"
   },
   "main": "src/PropertiesReader",
-  "bin": {},
+  "files": [
+    "src/**/*.js"
+  ],
   "scripts": {
     "test": "node test/runner.js"
   },
-  "license": "MIT",
-  "engines": {
-    "node": ">= 0.4.1"
-  }
+  "license": "MIT"
 }

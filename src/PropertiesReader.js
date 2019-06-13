@@ -103,7 +103,7 @@
      */
     PropertiesReader.prototype._parsed = function(value) {
         var parsedValue = value;
-        if (value !== null && !isNaN(value)) {
+        if (value !== null && value !== '' && !isNaN(value)) {
             parsedValue = +value;
         }
         else if (value === 'true' || value === 'false') {
@@ -251,7 +251,7 @@
                     if (makePaths) {
                         require('mkdirp').sync(directoryPath);
                     }
-                    else if (!require('fs').statSync(directoryPath).isDirectory()) {
+                    else if (!fs.statSync(directoryPath).isDirectory()) {
                         throw new Error("Path is not a directory that already exists");
                     }
                 }

@@ -3,6 +3,7 @@ var Assertions = require('unit-test').Assertions;
 var Sinon = require('unit-test').Sinon;
 var TestCase = require('unit-test').TestCase;
 var FileSystem = require('fs');
+var noOp = function () {};
 var propertiesReader = require('../src/PropertiesReader.js');
 var properties;
 
@@ -52,7 +53,7 @@ module.exports = new TestCase("Reader", {
       while (tempFile.files && tempFile.files.length) {
          var filePath = tempFile.files.pop();
          try {
-            FileSystem.unlink(filePath);
+            FileSystem.unlink(filePath, noOp);
          }
          catch (e) {
          }
@@ -112,6 +113,11 @@ module.exports = new TestCase("Reader", {
       Assertions.assertEquals(false, properties.get('c'), 'creates boolean false');
       Assertions.assertEquals(123, properties.get('a'), 'creates integer');
       Assertions.assertEquals(0.1, properties.get('d'), 'creates float');
+   },
+
+   'test Correctly handles values that are nothing but whitespace': function () {
+      givenFilePropertiesReader('a =    \n');
+      Assertions.assertEquals('', properties.getRaw('a'), 'Whitespace is handled as an empty string');
    },
 
    'test Allows access to non-parsed values': function () {
