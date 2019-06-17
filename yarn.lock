@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@kwsites/file-exists@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@kwsites/file-exists/-/file-exists-1.0.0.tgz#4bd9b8476ab98383845608535c1869a6fed64469"
+
 "@sinonjs/commons@^1", "@sinonjs/commons@^1.0.2", "@sinonjs/commons@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.4.0.tgz#7b3ec2d96af481d7a0321252e7b1c94724ec5a78"

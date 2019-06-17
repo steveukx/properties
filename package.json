@@ -20,6 +20,7 @@
     "mkdirp": "~0.5.1"
   },
   "devDependencies": {
+    "@kwsites/file-exists": "^1.0.0",
     "expect.js": "^0.3.1",
     "mocha": "^6.1.4",
     "rimraf": "^2.6.3",
@@ -40,6 +41,9 @@
   ],
   "scripts": {
     "test": "mocha ./test/*.spec.js"
+  },
+  "engines": {
+    "node": ">=6"
   },
   "license": "MIT"
 }
