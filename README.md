@@ -10,7 +10,8 @@ The easiest installation is through [NPM](http://npmjs.org):
 
     npm install properties-reader
 
-Or clone the repo https://github.com/steveukx/properties and include the `/src/PropertiesReader.js` script.
+Or clone the repo [git clone https://github.com/steveukx/properties](https://github.com/steveukx/properties) and
+import the `/src/PropertiesReader.js` script.
 
 API
 ===
@@ -67,6 +68,27 @@ When duplicate names are found in the properties, the first one read will be rep
 
 To get the complete set of properties, either loop through them with the `.each((key, value) => {})` iterator or
 use the convenience method `getAllProperties` to return the complete set of flattened properties. 
+
+### Saving changes
+
+Once a file has been read and changes made, saving those changes to another file is as simple as running:
+
+```
+// async/await ES6
+const props = new PropertiesReader(filePath);
+await props.save(filePath);
+
+// tradtitonal
+const props = new PropertiesReader(filePath);
+
+// ES5 callback style
+props.save(filePath, function then(err, data) { ... });
+
+// ES5 promise style
+props.save(filePath).then(onSaved, onSaveError);
+
+```
+
 
 Data Types
 ==========
