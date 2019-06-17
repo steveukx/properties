@@ -16,7 +16,7 @@ describe('section', () => {
 
    afterEach(() => tempFile.tearDown());
 
-   it('test Able to read URLs as part of a section', () => {
+   it('Able to read URLs as part of a section', () => {
       givenTheProperties(`
 [foo]
 base.api.url=http://blah.com
@@ -33,7 +33,7 @@ thing = 123
       expect(properties.get('another.thing')).to.be(123);
    });
 
-   it('test Able to read file with sections that are already properties', () => {
+   it('Able to read file with sections that are already properties', () => {
       givenTheProperties(`
          some = thing
          section = value
@@ -47,7 +47,7 @@ thing = 123
       expect(properties.path().section).to.eql({'': 'value', 'sub': 'property'});
    });
 
-   it('test Ignores comment blocks', () => {
+   it('Ignores comment blocks', () => {
       givenTheProperties(`
 
         some = thing
@@ -60,7 +60,7 @@ thing = 123
       expect(properties.get('section')).to.be('another value');
    });
 
-   it('test Able to read from a file with sections', () => {
+   it('Able to read from a file with sections', () => {
       givenTheProperties(`
       some.property = Value
       
@@ -77,7 +77,7 @@ thing = 123
       expect(properties.path().blah.another.property).to.be('Something Else');
    });
 
-   it('test Able use section names with white space', () => {
+   it('Able use section names with white space', () => {
       givenTheProperties(`
       
          some.property = Value

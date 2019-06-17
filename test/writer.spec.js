@@ -16,7 +16,7 @@ describe('writer', () => {
 
    afterEach(() => tempFile.tearDown());
 
-   it('test Able to stringify properties', () => {
+   it('Able to stringify properties', () => {
       givenTheProperties(`
          property = Value
       `);
@@ -26,7 +26,7 @@ describe('writer', () => {
       expect(propertiesStringsArray).to.eql(['property=Value']);
    });
 
-   it('test Able to stringify properties with section', () => {
+   it('Able to stringify properties with section', () => {
       givenTheProperties(`
          [main]
             property=Value
@@ -37,7 +37,7 @@ describe('writer', () => {
       expect(propertiesStringsArray).to.eql(['[main]', 'property=Value']);
    });
 
-   it( 'test Able to stringify properties with the few sections', () => {
+   it( 'Able to stringify properties with the few sections', () => {
       const inputContent = `
 
 property1=Value1
@@ -59,7 +59,7 @@ property4=Value4
       expect(propertiesStringsArray).to.eql(inputContent.trim().split('\n').filter(Boolean));
    });
 
-   it( 'test Able to stringify properties after set', () => {
+   it( 'Able to stringify properties after set', () => {
       givenTheProperties('property=Value');
 
       properties.set('property', 'xxx');
@@ -67,14 +67,14 @@ property4=Value4
       expect(properties._stringifyProperties()).to.eql(['property=xxx']);
    });
 
-   it( 'test Able to stringify properties after set with sections', () => {
+   it( 'Able to stringify properties after set with sections', () => {
       givenTheProperties('[main]\nproperty=Value');
 
       properties.set('main.property', 'xxx');
       expect(properties._stringifyProperties()).to.eql(['[main]', 'property=xxx']);
    });
 
-   it( 'test Able to stringify properties after set with sections and dots', () => {
+   it( 'Able to stringify properties after set with sections and dots', () => {
       givenTheProperties('[main]\nproperty.one=Value');
 
       properties.set('main.property.one', 'xxx');

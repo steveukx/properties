@@ -17,7 +17,7 @@ describe('bind-to-server', () => {
 
    afterEach(() => tempFile.tearDown());
 
-   it('test Creates directories when necessary - absolute paths', () => {
+   it('Creates directories when necessary - absolute paths', () => {
       const dirPath = tempFile.pushDir('/tmp/' + Math.floor(Math.random() * 1e10).toString(16));
       const app = {set: spy()};
 
@@ -32,7 +32,7 @@ describe('bind-to-server', () => {
       expect(require('fs').statSync(dirPath).isDirectory()).to.be.ok();
    });
 
-   it('test Creates directories when necessary - relative paths', () => {
+   it('Creates directories when necessary - relative paths', () => {
       const dirName = Math.floor(Math.random() * 1e10).toString(16);
       const dirBase = process.cwd();
       const dirPath = tempFile.pushDir(dirBase + '/' + dirName);

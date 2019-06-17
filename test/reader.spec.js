@@ -17,12 +17,12 @@ describe('Reader', () => {
 
    afterEach(() => tempFile.tearDown());
 
-   it('test Able to read from a file', () => {
+   it('Able to read from a file', () => {
       givenTheProperties('some.property=Value');
       expect(properties.get('some.property')).to.be('Value');
    });
 
-   it('test Merges multiple files', () => {
+   it('Merges multiple files', () => {
       givenTheProperties('some.property=Value');
 
       tempFile('[section]\nsome.property=Another Value');
@@ -32,7 +32,7 @@ describe('Reader', () => {
       expect(properties.get('some.property')).to.be('Value');
    });
 
-   it('test Runs a function across all items in the reader', () => {
+   it('Runs a function across all items in the reader', () => {
       givenTheProperties(
          'a = 123\n' +
          'b = true\n'
@@ -51,7 +51,7 @@ describe('Reader', () => {
       }
    });
 
-   it('test Attempts type coercion', () => {
+   it('Attempts type coercion', () => {
       givenTheProperties(
          'a = 123\n' +
          'b = true\n' +
@@ -63,12 +63,12 @@ describe('Reader', () => {
       expect(properties.get('d')).to.be(0.1);
    });
 
-   it('test Correctly handles values that are nothing but whitespace', () => {
+   it('Correctly handles values that are nothing but whitespace', () => {
       givenTheProperties('a =    \n');
       expect(properties.getRaw('a')).to.be('');
    });
 
-   it('test Allows access to non-parsed values', () => {
+   it('Allows access to non-parsed values', () => {
       givenTheProperties(`
          a = 123
          b = true
@@ -81,7 +81,7 @@ describe('Reader', () => {
       expect(properties.getRaw('d')).to.be('0.1');
    });
 
-   it('test Properties are trimmed when parsed', () => {
+   it('Properties are trimmed when parsed', () => {
       givenTheProperties(`
          some.property =Value
          foo.bar = A Value`);
@@ -90,20 +90,20 @@ describe('Reader', () => {
       expect(properties.get('foo.bar')).to.be('A Value');
    });
 
-   it('test Blank lines are ignored', () => {
+   it('Blank lines are ignored', () => {
       givenTheProperties('\n\nsome.property=Value\n\nfoo.bar = A Value');
 
       expect(properties.length).to.be(2);
    });
 
-   it('test Properties can be read back via their dot notation names', () => {
+   it('Properties can be read back via their dot notation names', () => {
       givenTheProperties('\n\nsome.property=Value\n\nfoo.bar = A Value');
 
       expect(properties.path().some.property).to.be('Value');
       expect(properties.path().foo.bar).to.be('A Value');
    });
 
-   it('test Sets properties into an app', () => {
+   it('Sets properties into an app', () => {
       const app = {set: spy()};
       givenTheProperties(`
          some.property=Value
@@ -114,7 +114,7 @@ describe('Reader', () => {
       expect(app.set.withArgs('foo.bar', 'A Value').calledOnce).to.be.ok();
    });
 
-   it('test Permits escaped new line characters', () => {
+   it('Permits escaped new line characters', () => {
       givenTheProperties('\n\nsome.property= Multi\\n Line \\nString \nfoo.bar = A Value');
 
       // parsed access modifies the new line characters
@@ -126,7 +126,7 @@ describe('Reader', () => {
       expect(properties.path().some.property).to.be('Multi\\n Line \\nString');
    });
 
-   it('test Returns null when getting a missing property', () => {
+   it('Returns null when getting a missing property', () => {
       givenTheProperties('prop = value');
 
       // parsed access modifies the new line characters
@@ -134,7 +134,7 @@ describe('Reader', () => {
       expect(properties.get('missing')).to.be(null);
    });
 
-   it('test getByRoot when getting a bunch of objects', () => {
+   it('getByRoot when getting a bunch of objects', () => {
       givenTheProperties(`
          root.sect.a = 1
          root.sect.b = bar
@@ -154,7 +154,7 @@ describe('Reader', () => {
       );
    });
 
-   it('test getByRoot when names are sub strings', () => {
+   it('getByRoot when names are sub strings', () => {
       givenTheProperties(`
 
          root.sect.a = 1
@@ -170,7 +170,7 @@ describe('Reader', () => {
       });
    });
 
-   it('test getAllProperties returns properties map', () => {
+   it('getAllProperties returns properties map', () => {
       givenTheProperties(`
 
          root.a.b = Hello
@@ -184,7 +184,7 @@ describe('Reader', () => {
       });
    });
 
-   it('test getAllProperties is immutable', () => {
+   it('getAllProperties is immutable', () => {
       givenTheProperties(`
 
          root.a.b = Hello
