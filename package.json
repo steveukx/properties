@@ -1,7 +1,7 @@
 {
   "name": "properties-reader",
   "description": "Properties file reader for Node.js",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": {
     "name": "Steve King",
     "email": "steve@mydev.co"
