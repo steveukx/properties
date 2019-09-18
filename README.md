@@ -89,6 +89,15 @@ props.save(filePath).then(onSaved, onSaveError);
 
 ```
 
+Or if keys should not be converted into sections:
+
+```
+// async/await ES6
+const props = new PropertiesReader(filePath, {write_sections: false});
+await props.save(filePath);
+```
+
+
 
 Data Types
 ==========
