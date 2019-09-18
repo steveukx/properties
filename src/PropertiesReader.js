@@ -5,12 +5,23 @@ var fs = require('fs');
 /**
  *
  * @param {String} sourceFile
+ * @param {{}} options
  * @constructor
  * @name {PropertiesReader}
  */
-function PropertiesReader (sourceFile) {
+function PropertiesReader (sourceFile, options) {
    this._properties = {};
    this._propertiesExpanded = {};
+   this._options = {
+      write_sections: true
+   };
+
+   if (options) {
+      Object.keys(options).forEach(function (key) {
+         this._options[key] = options[key];
+      }.bind(this));
+   }
+
    this.append(sourceFile);
 }
 
@@ -281,20 +292,21 @@ PropertiesReader.prototype._stringifyProperties = function () {
    var lines = [];
    var section = null;
    this.each(function (key, value) {
-      var tokens = key.split('.');
-      if (tokens.length > 1) {
-         if (section !== tokens[0]) {
-            section = tokens[0];
-            lines.push('[' + section + ']');
+      if (this._options.write_sections) {
+         var tokens = key.split('.');
+         if (tokens.length > 1) {
+            if (section !== tokens[0]) {
+               section = tokens[0];
+               lines.push('[' + section + ']');
+            }
+            key = tokens.slice(1).join('.');
+         } else {
+            section = null;
          }
-         key = tokens.slice(1).join('.');
-      }
-      else {
-         section = null;
       }
 
       lines.push(key + '=' + value);
-   });
+   }.bind(this));
    return lines;
 };
 
@@ -328,8 +340,8 @@ PropertiesReader.prototype.save = function (destFile, onComplete) {
    return onDone;
 };
 
-PropertiesReader.builder = function (sourceFile) {
-   return new PropertiesReader(sourceFile);
+PropertiesReader.builder = function (sourceFile, options) {
+   return new PropertiesReader(sourceFile, options);
 };
 
 module.exports = PropertiesReader.builder;

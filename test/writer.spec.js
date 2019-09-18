@@ -8,8 +8,8 @@ describe('writer', () => {
    const tempFile = require('./utils/temporary-file');
    const {givenFilePropertiesReader} = require('./utils/bdd');
 
-   function givenTheProperties (content) {
-      return properties = givenFilePropertiesReader(content);
+   function givenTheProperties (content, options) {
+      return properties = givenFilePropertiesReader(content, options);
    }
 
    async function givenThePropertiesAreSaved () {
@@ -90,6 +90,15 @@ property4=Value4
       await givenThePropertiesAreSaved();
 
       expect(theSavedProperties).to.eql(['[main]', 'property.one=xxx']);
+   });
+
+   it('Able to stringify properties after set without sections and dots', async () => {
+      givenTheProperties('main.property.one=Value', {write_sections: false});
+
+      properties.set('main.property.one', 'xxx');
+      await givenThePropertiesAreSaved();
+
+      expect(theSavedProperties).to.eql(['main.property.one=xxx']);
    });
 
 
