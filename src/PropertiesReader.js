@@ -5,13 +5,14 @@ var fs = require('fs');
 /**
  *
  * @param {String} sourceFile
+ * @param encoding
  * @constructor
  * @name {PropertiesReader}
  */
 function PropertiesReader (sourceFile, encoding) {
    this._properties = {};
    this._propertiesExpanded = {};
-   this.append(sourceFile, encoding);
+   this.append(sourceFile, encoding==='undefined'?'utf-8':encoding);
 }
 
 /**
