@@ -8,10 +8,10 @@ var fs = require('fs');
  * @constructor
  * @name {PropertiesReader}
  */
-function PropertiesReader (sourceFile) {
+function PropertiesReader (sourceFile, encoding) {
    this._properties = {};
    this._propertiesExpanded = {};
-   this.append(sourceFile);
+   this.append(sourceFile, encoding);
 }
 
 /**
@@ -42,9 +42,9 @@ Object.defineProperty(PropertiesReader.prototype, 'length', {
  * @param {string} sourceFile
  * @return {PropertiesReader} this instance
  */
-PropertiesReader.prototype.append = function (sourceFile) {
+PropertiesReader.prototype.append = function (sourceFile, encoding) {
    if (sourceFile) {
-      this.read(fs.readFileSync(sourceFile, 'utf-8'));
+      this.read(fs.readFileSync(sourceFile, encoding));
    }
    return this;
 };
@@ -328,8 +328,8 @@ PropertiesReader.prototype.save = function (destFile, onComplete) {
    return onDone;
 };
 
-PropertiesReader.builder = function (sourceFile) {
-   return new PropertiesReader(sourceFile);
+PropertiesReader.builder = function (sourceFile, encoding) {
+   return new PropertiesReader(sourceFile, encoding);
 };
 
 module.exports = PropertiesReader.builder;
