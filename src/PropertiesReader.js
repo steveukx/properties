@@ -1,6 +1,4 @@
-"use strict";
-
-var fs = require('fs');
+const fs = require('fs');
 
 /**
  *
@@ -12,7 +10,8 @@ var fs = require('fs');
 function PropertiesReader (sourceFile, encoding) {
    this._properties = {};
    this._propertiesExpanded = {};
-   this.append(sourceFile, encoding==='undefined'?'utf-8':encoding);
+
+   this.append(sourceFile, encoding);
 }
 
 /**
@@ -30,23 +29,24 @@ PropertiesReader.prototype._section = '';
 Object.defineProperty(PropertiesReader.prototype, 'length', {
    configurable: false,
    enumerable: false,
-   get: function () {
+   get () {
       return Object.keys(this._properties).length;
-   },
-   set: function () {
-      throw new Error("Cannot set length of PropertiesReader properties");
    }
 });
 
 /**
  * Append a file to the properties into the PropertiesReader
+ *
  * @param {string} sourceFile
+ * @param {string} [encoding='utf-8']
+ *
  * @return {PropertiesReader} this instance
  */
 PropertiesReader.prototype.append = function (sourceFile, encoding) {
    if (sourceFile) {
-      this.read(fs.readFileSync(sourceFile, encoding));
+      this.read(fs.readFileSync(sourceFile, typeof encoding === 'string' && encoding || 'utf-8'));
    }
+
    return this;
 };
 
@@ -101,21 +101,23 @@ PropertiesReader.prototype.each = function (fn, scope) {
  * Given the supplied raw value, returns the parsed value
  */
 PropertiesReader.prototype._parsed = function (value) {
-   var parsedValue = value;
+
    if (value !== null && value !== '' && !isNaN(value)) {
-      parsedValue = +value;
+      return +value;
    }
-   else if (value === 'true' || value === 'false') {
-      parsedValue = (value === 'true');
+
+   if (value === 'true' || value === 'false') {
+      return value === 'true';
    }
-   else if (typeof value === "string") {
+
+   if (typeof value === "string") {
       var replacements = {'\\n': '\n', '\\r': '\r', '\\t': '\t'};
-      parsedValue = value.replace(/\\[nrt]/g, function (key) {
+      return value.replace(/\\[nrt]/g, function (key) {
          return replacements[key];
       });
    }
 
-   return parsedValue;
+   return value;
 };
 
 /**
@@ -306,8 +308,8 @@ PropertiesReader.prototype._stringifyProperties = function () {
  * @param {function} onComplete callback
  */
 PropertiesReader.prototype.save = function (destFile, onComplete) {
-   var content = this._stringifyProperties().join('\n');
-   var onDone = new Promise((done, fail) => {
+   const content = this._stringifyProperties().join('\n');
+   const onDone = new Promise((done, fail) => {
       fs.writeFile(destFile, content, (err) => {
          if (err) {
             return fail(err);
