@@ -36,7 +36,7 @@ function sectionCollapsePropertyAppender (properties, key, value) {
          processing = AFTER;
       }
       else if (processing === BEFORE && during) {
-         // starts to be DURINg
+         // starts to be DURING
          processing = DURING;
       }
       else if (processing === DURING && !during) {
@@ -49,7 +49,7 @@ function sectionCollapsePropertyAppender (properties, key, value) {
 
    });
 
-   if (processing === BEFORE) {
+   if (processing !== AFTER) {
       output[key] = value;
    }
 
