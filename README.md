@@ -10,16 +10,13 @@ The easiest installation is through [NPM](http://npmjs.org):
 
     npm install properties-reader
 
-Or clone the repo [git clone https://github.com/steveukx/properties](https://github.com/steveukx/properties) and
-import the `/src/PropertiesReader.js` script.
-
 API
 ===
 
 Read properties from a file:
 
-    var PropertiesReader = require('properties-reader');
-    var properties = PropertiesReader('/path/to/properties.file');
+    var propertiesReader = require('properties-reader');
+    var properties = propertiesReader('/path/to/properties.file');
 
 The properties are then accessible either by fully qualified name, or if the property names are in dot-delimited
 notation, they can be access as an object:
@@ -73,28 +70,41 @@ use the convenience method `getAllProperties` to return the complete set of flat
 
 Once a file has been read and changes made, saving those changes to another file is as simple as running:
 
-```
+```javascript
 // async/await ES6
-const props = new PropertiesReader(filePath);
+const propertiesReader = require('properties-reader');
+const props = propertiesReader(filePath);
 await props.save(filePath);
 
-// tradtitonal
-const props = new PropertiesReader(filePath);
-
-// ES5 callback style
+// ES5 callback styles
 props.save(filePath, function then(err, data) { ... });
 
 // ES5 promise style
 props.save(filePath).then(onSaved, onSaveError);
-
 ```
-
 
 Data Types
 ==========
 
 Properties will automatically be converted to their regular data types when they represent true/false or numeric
 values. To get the original value without any parsing / type coercion applied, use `properties.getRaw('path.to.prop')`.
+
+FAQ / Breaking Changes
+======================
+
+## Duplicate Section Headings
+
+From version `2.0.0` the default behaviour relating to multiple `[section]` blocks with the same name has changed
+so combine the items of each same-named section into the one section. This is only visible when saving the items
+(via `reader.save()`).
+
+To restore the previous behaviour which would allow duplicate `[...]` blocks to be created, supply an appender
+configuration with the property `allowDuplicateSections` set to `true`.
+
+```javascript
+const propertiesReader = require('properties-reader');
+const props = propertiesReader(filePath, 'utf-8', { allowDuplicateSections: true });
+```
 
 Contributions
 =============

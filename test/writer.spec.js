@@ -8,8 +8,8 @@ describe('writer', () => {
    const tempFile = require('./utils/temporary-file');
    const {givenFilePropertiesReader} = require('./utils/bdd');
 
-   function givenTheProperties (content) {
-      return properties = givenFilePropertiesReader(content);
+   function givenTheProperties (content, appender) {
+      return properties = givenFilePropertiesReader(content, appender);
    }
 
    async function givenThePropertiesAreSaved () {
@@ -44,7 +44,8 @@ describe('writer', () => {
       expect(theSavedProperties).to.eql(['[main]', 'property=Value']);
    });
 
-   it('Able to stringify properties with the few sections', async () => {
+   describe('Able to stringify properties with the few sections', () => {
+
       const inputContent = `
 
 property1=Value1
@@ -59,11 +60,37 @@ property3=Value3
 property4=Value4
 
       `;
-      givenTheProperties(inputContent);
 
-      await givenThePropertiesAreSaved();
-      expect(theSavedProperties).to.have.length(7);
-      expect(theSavedProperties).to.eql(inputContent.trim().split('\n').filter(Boolean));
+      it('Duplicate sections permitted', async () => {
+         givenTheProperties(inputContent, { allowDuplicateSections: true });
+
+         await givenThePropertiesAreSaved();
+         expect(theSavedProperties).to.eql([
+            'property1=Value1',
+            '[main]',
+            'property2=Value2',
+            '[second]',
+            'property3=Value3',
+            '[main]',
+            'property4=Value4',
+         ]);
+         expect(theSavedProperties).to.eql(inputContent.trim().split('\n').filter(Boolean));
+      });
+
+      it('Duplicate sections not permitted', async () => {
+         givenTheProperties(inputContent, { /* default behaviour... allowDuplicateSections: false */ });
+
+         await givenThePropertiesAreSaved();
+         expect(theSavedProperties).to.eql([
+            'property1=Value1',
+            '[main]',
+            'property2=Value2',
+            'property4=Value4',
+            '[second]',
+            'property3=Value3',
+         ]);
+      });
+
    });
 
    it('Able to stringify properties after set', async () => {
@@ -90,6 +117,48 @@ property4=Value4
       await givenThePropertiesAreSaved();
 
       expect(theSavedProperties).to.eql(['[main]', 'property.one=xxx']);
+   });
+
+   it('Maintains unique names when overwriting an existing property', async () => {
+      givenTheProperties(`
+      [s1]
+      s1foo = 1
+      [s2]
+      s2foo = 2
+      `);
+
+      properties.set('s2.s2foo', 'new');
+
+      await givenThePropertiesAreSaved();
+
+      expect(theSavedProperties).to.eql([
+         '[s1]',
+         's1foo=1',
+         '[s2]',
+         's2foo=new'
+      ]);
+   });
+
+   it('Maintains unique names when adding to an existing section', async () => {
+      givenTheProperties(`
+      [s1]
+      s1foo = 1
+      [s2]
+      s2foo = 2
+      `);
+
+      properties.set('s1.s1new', 'new');
+
+      await givenThePropertiesAreSaved();
+
+      expect(theSavedProperties).to.eql([
+         '[s1]',
+         's1foo=1',
+         's1new=new',
+         '[s2]',
+         's2foo=2'
+      ]);
+
    });
 
 

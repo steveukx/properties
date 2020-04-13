@@ -35,7 +35,7 @@
     "type": "git",
     "url": "git://github.com/steveukx/properties"
   },
-  "main": "src/PropertiesReader",
+  "main": "src/properties-reader-factory",
   "files": [
     "src/**/*.js"
   ],

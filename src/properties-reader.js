@@ -1,16 +1,18 @@
 const fs = require('fs');
+const propertyAppender = require('./property-appender').propertyAppender;
 
 /**
  *
- * @param {String} sourceFile
- * @param encoding
- * @constructor
- * @name {PropertiesReader}
+ * @param {String} sourceFile Path to the file from which to read properties
+ * @param {string} [encoding=utf-8] Default string encoding to use when reading files
+ * @param {Function | Object} [propertiesAppender] A `propertiesAppender` function or configuration object to create one
  */
-function PropertiesReader (sourceFile, encoding) {
+function PropertiesReader (sourceFile, encoding, propertiesAppender) {
+   this._encoding = typeof encoding === 'string' && encoding || 'utf-8';
    this._properties = {};
    this._propertiesExpanded = {};
 
+   this.appender(propertiesAppender || {});
    this.append(sourceFile, encoding);
 }
 
@@ -35,6 +37,31 @@ Object.defineProperty(PropertiesReader.prototype, 'length', {
 });
 
 /**
+ * Define the property appending mechanism to be used by the instance.
+ *
+ * By default, duplicate sections will be collapsed when saving the properties. To disable this
+ * feature, set the `allowDuplicateSections` appender configuration to `true`:
+ *
+ * ```
+const properties = propertiesReader('file.ini', 'utf-8', { allowDuplicateSections: true });
+const properties = propertiesReader('file.ini').appender({ allowDuplicateSections: true });
+```
+ *
+ * @param appender
+ * @returns {PropertiesReader}
+ */
+PropertiesReader.prototype.appender = function (appender) {
+   if (typeof appender === 'function') {
+      this._propertyAppender = appender;
+   }
+   else if (typeof appender === 'object') {
+      this._propertyAppender = propertyAppender(appender);
+   }
+
+   return this;
+};
+
+/**
  * Append a file to the properties into the PropertiesReader
  *
  * @param {string} sourceFile
@@ -43,8 +70,9 @@ Object.defineProperty(PropertiesReader.prototype, 'length', {
  * @return {PropertiesReader} this instance
  */
 PropertiesReader.prototype.append = function (sourceFile, encoding) {
+
    if (sourceFile) {
-      this.read(fs.readFileSync(sourceFile, typeof encoding === 'string' && encoding || 'utf-8'));
+      this.read(fs.readFileSync(sourceFile, typeof encoding === 'string' && encoding || this._encoding));
    }
 
    return this;
@@ -152,7 +180,7 @@ PropertiesReader.prototype.getRaw = function (key) {
 PropertiesReader.prototype.set = function (key, value) {
    var parsedValue = ('' + value).trim();
 
-   this._properties[key] = parsedValue;
+   this._properties = this._propertyAppender(this._properties, key, parsedValue);
 
    var expanded = key.split('.');
    var source = this._propertiesExpanded;
@@ -331,8 +359,4 @@ PropertiesReader.prototype.save = function (destFile, onComplete) {
    return onDone;
 };
 
-PropertiesReader.builder = function (sourceFile, encoding) {
-   return new PropertiesReader(sourceFile, encoding);
-};
-
-module.exports = PropertiesReader.builder;
+module.exports = PropertiesReader;
