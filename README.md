@@ -73,7 +73,7 @@ Once a file has been read and changes made, saving those changes to another file
 ```javascript
 // async/await ES6
 const propertiesReader = require('properties-reader');
-const props = propertiesReader(filePath);
+const props = propertiesReader(filePath, {writer: { saveSections: true }});
 await props.save(filePath);
 
 // ES5 callback styles
@@ -82,6 +82,8 @@ props.save(filePath, function then(err, data) { ... });
 // ES5 promise style
 props.save(filePath).then(onSaved, onSaveError);
 ```
+
+To output the properties without any section headings, set the `saveSections` option to `false`
 
 Data Types
 ==========

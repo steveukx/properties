@@ -1,18 +1,14 @@
 const fs = require('fs');
 const propertyAppender = require('./property-appender').propertyAppender;
+const propertyWriter = require('./property-writer').propertyWriter;
 
-/**
- *
- * @param {String} sourceFile Path to the file from which to read properties
- * @param {string} [encoding=utf-8] Default string encoding to use when reading files
- * @param {Function | Object} [propertiesAppender] A `propertiesAppender` function or configuration object to create one
- */
-function PropertiesReader (sourceFile, encoding, propertiesAppender) {
+function PropertiesReader (sourceFile, encoding, options = {}) {
    this._encoding = typeof encoding === 'string' && encoding || 'utf-8';
    this._properties = {};
    this._propertiesExpanded = {};
 
-   this.appender(propertiesAppender || {});
+   this.appender(options.appender || options);
+   this.writer(options.writer || options);
    this.append(sourceFile, encoding);
 }
 
@@ -56,6 +52,31 @@ PropertiesReader.prototype.appender = function (appender) {
    }
    else if (typeof appender === 'object') {
       this._propertyAppender = propertyAppender(appender);
+   }
+
+   return this;
+};
+
+/**
+ * Define the property appending mechanism to be used by the instance.
+ *
+ * By default, duplicate sections will be collapsed when saving the properties. To disable this
+ * feature, set the `allowDuplicateSections` appender configuration to `true`:
+ *
+ * ```
+const properties = propertiesReader('file.ini', 'utf-8', { allowDuplicateSections: true });
+const properties = propertiesReader('file.ini').appender({ allowDuplicateSections: true });
+```
+ *
+ * @param writer
+ * @returns {PropertiesReader}
+ */
+PropertiesReader.prototype.writer = function (writer) {
+   if (typeof writer === 'function') {
+      this._propertyWriter = writer;
+   }
+   else if (typeof writer === 'object') {
+      this._propertyWriter = propertyWriter(writer);
    }
 
    return this;
@@ -308,55 +329,16 @@ PropertiesReader.prototype.bindToExpress = function (app, basePath, makePaths) {
  *
  * @returns {string[]} array of stringified properties
  */
-PropertiesReader.prototype._stringifyProperties = function () {
-   var lines = [];
-   var section = null;
-   this.each(function (key, value) {
-      var tokens = key.split('.');
-      if (tokens.length > 1) {
-         if (section !== tokens[0]) {
-            section = tokens[0];
-            lines.push('[' + section + ']');
-         }
-         key = tokens.slice(1).join('.');
-      }
-      else {
-         section = null;
-      }
 
-      lines.push(key + '=' + value);
-   });
-   return lines;
-};
 
 /**
  * Write properties into the file
  *
  * @param {String} destFile
- * @param {function} onComplete callback
+ * @param {Function} onComplete callback
  */
 PropertiesReader.prototype.save = function (destFile, onComplete) {
-   const content = this._stringifyProperties().join('\n');
-   const onDone = new Promise((done, fail) => {
-      fs.writeFile(destFile, content, (err) => {
-         if (err) {
-            return fail(err);
-         }
-
-         done(content);
-      });
-   });
-
-   if (typeof onComplete === 'function') {
-      if (onComplete.length > 1) {
-         onDone.then(onComplete.bind(null, null), onComplete.bind(null));
-      }
-      else {
-         onDone.then(onComplete)
-      }
-   }
-
-   return onDone;
+   return this._propertyWriter(this, destFile, onComplete);
 };
 
 module.exports = PropertiesReader;
