@@ -53,6 +53,20 @@ to replace the current section.
     // reading these back from the properties reader
     properties.get('main.some.thing') == 'foo';
     properties.get('blah.some.thing') == 'bar';
+    
+    // looping through the properties reader
+    properties.each((key, value) => {
+      // called for each item in the reader,
+      // first with key=main.some.thing, value=foo
+      // next with key=blah.some.thing, value=bar
+    });
+    
+    // get all properties at once
+    expect(properties.getAllProperties()).toEqual({
+      'main.some.thing': 'foo',
+      'blah.some.thing': 'bar',
+    })
+    
 
 Checking for the current number of properties that have been read into the reader:
 
