@@ -61,6 +61,18 @@ property4=Value4
 
       `;
 
+      it('can remove sections from output entirely', async () => {
+         givenTheProperties(inputContent, { saveSections: false });
+
+         await givenThePropertiesAreSaved();
+         expect(theSavedProperties).to.eql([
+            'property1=Value1',
+            'main.property2=Value2',
+            'main.property4=Value4',
+            'second.property3=Value3',
+         ]);
+      });
+
       it('Duplicate sections permitted', async () => {
          givenTheProperties(inputContent, { allowDuplicateSections: true });
 
