@@ -73,6 +73,14 @@ property4=Value4
          ]);
       });
 
+      it('can remove sections from output entirely - writer options', async () => {
+         givenTheProperties(inputContent, {writer: { saveSections: false }});
+
+         await givenThePropertiesAreSaved();
+         expect(theSavedProperties.length).to.be(4);
+         expect(theSavedProperties.some(line => line.includes('['))).to.be(false);
+      });
+
       it('Duplicate sections permitted', async () => {
          givenTheProperties(inputContent, { allowDuplicateSections: true });
 
