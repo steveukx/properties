@@ -1,6 +1,8 @@
-const fs = require('fs');
+const {readFileSync, statSync} = require('fs');
 const propertyAppender = require('./property-appender').propertyAppender;
 const propertyWriter = require('./property-writer').propertyWriter;
+
+const SECTION = Symbol('SECTION');
 
 function PropertiesReader (sourceFile, encoding, options = {}) {
    this._encoding = typeof encoding === 'string' && encoding || 'utf-8';
@@ -16,7 +18,7 @@ function PropertiesReader (sourceFile, encoding, options = {}) {
  * @type {String} The name of a section that should be prefixed on an property as it is added
  * @ignore
  */
-PropertiesReader.prototype._section = '';
+PropertiesReader.prototype[SECTION] = '';
 
 /**
  * Gets the number of properties that have been read into this PropertiesReader.
@@ -93,7 +95,7 @@ PropertiesReader.prototype.writer = function (writer) {
 PropertiesReader.prototype.append = function (sourceFile, encoding) {
 
    if (sourceFile) {
-      this.read(fs.readFileSync(sourceFile, typeof encoding === 'string' && encoding || this._encoding));
+      this.read(readFileSync(sourceFile, typeof encoding === 'string' && encoding || this._encoding));
    }
 
    return this;
@@ -106,7 +108,7 @@ PropertiesReader.prototype.append = function (sourceFile, encoding) {
  * @return {PropertiesReader} this instance
  */
 PropertiesReader.prototype.read = function (input) {
-   delete this._section;
+   delete this[SECTION];
    ('' + input).split('\n').forEach(this._readLine, this);
    return this;
 };
@@ -121,10 +123,10 @@ PropertiesReader.prototype._readLine = function (propertyString) {
       var property = !section && /^([^#=]+)(={0,1})(.*)$/.exec(propertyString);
 
       if (section) {
-         this._section = section[1];
+         this[SECTION] = section[1];
       }
       else if (property) {
-         section = this._section ? this._section + '.' : '';
+         section = this[SECTION] ? this[SECTION] + '.' : '';
          this.set(section + property[1].trim(), property[3].trim());
       }
    }
@@ -295,7 +297,7 @@ PropertiesReader.prototype.bindToExpress = function (app, basePath, makePaths) {
 
    this.each(function (key, value) {
       if (value && /\.(path|dir)$/.test(key)) {
-         value = Path.join(basePath, Path.relative(basePath, value));
+         value = Path.resolve(basePath, value);
          this.set(key, value);
 
          try {
@@ -303,7 +305,7 @@ PropertiesReader.prototype.bindToExpress = function (app, basePath, makePaths) {
             if (makePaths) {
                require('mkdirp').sync(directoryPath);
             }
-            else if (!fs.statSync(directoryPath).isDirectory()) {
+            else if (!statSync(directoryPath).isDirectory()) {
                throw new Error("Path is not a directory that already exists");
             }
          }

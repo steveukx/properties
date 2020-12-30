@@ -1,54 +1,76 @@
-const expect = require('expect.js');
-const {spy} = require('sinon');
+const {createTestContext} = require('./__fixtues__/create-test-context');
+const {io} = require('./__fixtues__/io');
+
+const propertiesReader = require('../');
 
 describe('bind-to-server', () => {
 
-   let properties;
+   let context;
+   let app;
 
-   const tempFile = require('./utils/temporary-file');
-   const {givenFilePropertiesReader} = require('./utils/bdd');
-
-   function givenTheProperties (content) {
-      return properties = givenFilePropertiesReader(content);
-   }
-
-   beforeEach(() => {
+   beforeEach(async () => {
+      context = await createTestContext();
+      app = {
+         set: jest.fn(),
+      };
    });
+   afterEach(() => jest.restoreAllMocks());
 
-   afterEach(() => tempFile.tearDown());
-
-   it('Creates directories when necessary - absolute paths', () => {
-      const dirPath = tempFile.pushDir('/tmp/' + Math.floor(Math.random() * 1e10).toString(16));
-      const app = {set: spy()};
-
-      givenTheProperties(`
-
+   it('Creates directories when necessary - absolute paths', async () => {
+      const dirPath = context.path('foo');
+      const file = `
          some.property.dir = ${ dirPath }
-
          foo.bar = A Value
+      `;
 
-      `).bindToExpress(app, null, true);
+      propertiesReader(await context.file('properties.ini', file))
+         .bindToExpress(app, null, true);
 
-      expect(require('fs').statSync(dirPath).isDirectory()).to.be.ok();
+      expect(io.isdir(dirPath)).toBe(true);
    });
 
-   it('Creates directories when necessary - relative paths', () => {
-      const dirName = Math.floor(Math.random() * 1e10).toString(16);
-      const dirBase = process.cwd();
-      const dirPath = tempFile.pushDir(dirBase + '/' + dirName);
-      const app = {set: spy()};
+   it('Does not create directories when already present', async () => {
+      const dirPath = await context.dir('foo');
+      const file = `
+         some.property.dir = ${ dirPath }
+         foo.bar = A Value
+      `;
 
-      givenTheProperties(`
+      propertiesReader(await context.file('properties.ini', file))
+         .bindToExpress(app, null, true);
 
+      expect(io.isdir(dirPath)).toBe(true);
+   });
+
+   it('Creates directories when necessary - relative paths', async () => {
+      jest.spyOn(process, 'cwd').mockReturnValue(context.root);
+
+      const dirName = 'bar';
+      const dirPath = context.path(dirName);
+      const file = `
          some.property.dir = ${ dirName }
-
          foo.bar = A Value
+      `;
 
-      `).bindToExpress(app, dirBase, true);
+      propertiesReader(await context.file('properties.ini', file))
+         .bindToExpress(app, null, true);
 
-      expect(require('fs').statSync(dirPath).isDirectory()).to.be.ok();
+      expect(io.isdir(dirPath)).toBe(true);
    });
 
+   it('Creates directories when necessary - relative path to explicit working directory', async () => {
+      const dirName = 'bar';
+      const dirPath = context.path(dirName);
+      const file = `
+         some.property.dir = ${ dirName }
+         foo.bar = A Value
+      `;
+
+      propertiesReader(await context.file('properties.ini', file))
+         .bindToExpress(app, context.root, true);
+
+      expect(io.isdir(dirPath)).toBe(true);
+   });
 
 });
 
