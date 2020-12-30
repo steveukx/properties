@@ -1,23 +1,22 @@
-const expect = require('expect.js');
+const {createTestContext} = require('./__fixtues__/create-test-context');
+
+const propertiesReader = require('../');
 
 describe('section', () => {
 
    let properties;
+   let context;
 
-   const tempFile = require('./utils/temporary-file');
-   const {givenFilePropertiesReader} = require('./utils/bdd');
-
-   function givenTheProperties (content) {
-      return properties = givenFilePropertiesReader(content);
+   async function givenTheProperties (content) {
+      return properties = propertiesReader(
+         await context.file('props.ini', content)
+      );
    }
 
-   beforeEach(() => {
-   });
+   beforeEach(async () => context = await createTestContext());
 
-   afterEach(() => tempFile.tearDown());
-
-   it('Able to read URLs as part of a section', () => {
-      givenTheProperties(`
+   it('Able to read URLs as part of a section', async () => {
+      await givenTheProperties(`
 [foo]
 base.api.url=http://blah.com
 
@@ -28,13 +27,13 @@ base.api.url=http://google.com
 thing = 123
        `);
 
-      expect(properties.get('foo.base.api.url')).to.be('http://blah.com');
-      expect(properties.get('trade.base.api.url')).to.be('http://google.com');
-      expect(properties.get('another.thing')).to.be(123);
+      expect(properties.get('foo.base.api.url')).toBe('http://blah.com');
+      expect(properties.get('trade.base.api.url')).toBe('http://google.com');
+      expect(properties.get('another.thing')).toBe(123);
    });
 
-   it('Able to read file with sections that are already properties', () => {
-      givenTheProperties(`
+   it('Able to read file with sections that are already properties', async () => {
+      await givenTheProperties(`
          some = thing
          section = value
 
@@ -42,44 +41,44 @@ thing = 123
          sub = property
         `);
 
-      expect(properties.get('section')).to.be('value');
-      expect(properties.get('section.sub')).to.be('property');
-      expect(properties.path().section).to.eql({'': 'value', 'sub': 'property'});
+      expect(properties.get('section')).toBe('value');
+      expect(properties.get('section.sub')).toBe('property');
+      expect(properties.path().section).toEqual({'': 'value', 'sub': 'property'});
    });
 
-   it('Ignores comment blocks', () => {
-      givenTheProperties(`
+   it('Ignores comment blocks', async () => {
+      await givenTheProperties(`
 
         some = thing
-        
+
         # section = value
         section = another value
 
      `);
 
-      expect(properties.get('section')).to.be('another value');
+      expect(properties.get('section')).toBe('another value');
    });
 
-   it('Able to read from a file with sections', () => {
-      givenTheProperties(`
+   it('Able to read from a file with sections', async () => {
+      await givenTheProperties(`
       some.property = Value
-      
+
       [section]
       another.property = Something
-      
+
       [blah]
       another.property = Something Else
-      
+
       `);
 
-      expect(properties.get('some.property')).to.be('Value');
-      expect(properties.get('section.another.property')).to.be('Something');
-      expect(properties.path().blah.another.property).to.be('Something Else');
+      expect(properties.get('some.property')).toBe('Value');
+      expect(properties.get('section.another.property')).toBe('Something');
+      expect(properties.path().blah.another.property).toBe('Something Else');
    });
 
-   it('Able use section names with white space', () => {
-      givenTheProperties(`
-      
+   it('Able use section names with white space', async () => {
+      await givenTheProperties(`
+
          some.property = Value
 
          [submodule foo]
@@ -89,7 +88,7 @@ thing = 123
          another.property = Something Else
 
       `);
-      expect(properties.path()['submodule foo'].another.property).to.be('Something');
+      expect(properties.path()['submodule foo'].another.property).toBe('Something');
    });
 
 });

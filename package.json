@@ -17,14 +17,10 @@
     }
   ],
   "dependencies": {
-    "mkdirp": "~0.5.1"
+    "mkdirp": "^1.0.4"
   },
   "devDependencies": {
-    "@kwsites/file-exists": "^1.0.0",
-    "expect.js": "^0.3.1",
-    "mocha": "^6.1.4",
-    "rimraf": "^2.6.3",
-    "sinon": "^7.3.2"
+    "jest": "^26.6.3"
   },
   "keywords": [
     "properties",
@@ -42,10 +38,36 @@
   "scripts": {
     "preversion": "npm test",
     "postversion": "npm publish && git push && git push --tags",
-    "test": "mocha ./test/*.spec.js"
+    "test": "jest --coverage"
   },
   "engines": {
     "node": ">=10"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "jest": {
+    "roots": [
+      "<rootDir>/src/",
+      "<rootDir>/test/"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    },
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/test/"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover"
+    ],
+    "testMatch": [
+      "**/test/**/*.spec.*"
+    ]
+  }
 }
