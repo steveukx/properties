@@ -217,7 +217,7 @@ PropertiesReader.prototype.set = function (key, value) {
       }
 
       if (!has(source, step)) {
-         Object.defineProperty(source, step, { value: Object.create(null) });
+         Object.defineProperty(source, step, { value: {} });
       }
 
       source = source[step]
