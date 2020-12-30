@@ -2,6 +2,8 @@ const {readFileSync, statSync} = require('fs');
 const propertyAppender = require('./property-appender').propertyAppender;
 const propertyWriter = require('./property-writer').propertyWriter;
 
+const has = Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnProperty);
+
 const SECTION = Symbol('SECTION');
 
 function PropertiesReader (sourceFile, encoding, options = {}) {
@@ -213,7 +215,12 @@ PropertiesReader.prototype.set = function (key, value) {
       if (expanded.length >= 1 && typeof source[step] === 'string') {
          source[step] = {'': source[step]};
       }
-      source = (source[step] = source[step] || {});
+
+      if (!has(source, step)) {
+         Object.defineProperty(source, step, { value: Object.create(null) });
+      }
+
+      source = source[step]
    }
 
    if (typeof parsedValue === 'string' && typeof  source[expanded[0]] === 'object') {
