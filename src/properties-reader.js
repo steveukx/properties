@@ -205,7 +205,9 @@ PropertiesReader.prototype.set = function (key, value) {
 
    var expanded = key.split('.');
    var source = this._propertiesExpanded;
-
+   if (key.includes('__proto__') || key.includes('prototype') || key.includes('constructor')) {
+      return this;
+   }
    while (expanded.length > 1) {
       var step = expanded.shift();
       if (expanded.length >= 1 && typeof source[step] === 'string') {
