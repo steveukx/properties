@@ -97,6 +97,10 @@ PropertiesReader.prototype.writer = function (writer) {
 PropertiesReader.prototype.append = function (sourceFile, encoding) {
 
    if (sourceFile) {
+      if(!readFileSync) {
+         return this;
+      }
+
       this.read(readFileSync(sourceFile, typeof encoding === 'string' && encoding || this._encoding));
    }
 
