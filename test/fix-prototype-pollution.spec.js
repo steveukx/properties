@@ -25,4 +25,14 @@ describe('prototype-pollution', () => {
       expect(props.get('__proto__.parsed')).toBe(true);
    });
 
+   it('does not pollute global Object.prototype with assignment to proto', async () => {
+      const file = `
+         __proto__ = 10
+      `;
+      const props = propertiesReader(await context.file('props-x.ini', file));
+
+      expect({}['']).toBeUndefined();
+      expect(props.path().__proto__).toBe('10');
+   });
+
 });
