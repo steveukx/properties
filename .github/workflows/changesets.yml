@@ -19,7 +19,6 @@ jobs:
               node-version: 18
 
          - run: yarn --frozen-lockfile
-         - run: yarn build
 
          - uses: changesets/action@v1
            with:
