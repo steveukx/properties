@@ -40,8 +40,12 @@
     "postversion": "npm publish && git push && git push --tags",
     "test": "jest --coverage"
   },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/steveukx/properties?sponsor=1"
+  },
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "license": "MIT",
   "jest": {
