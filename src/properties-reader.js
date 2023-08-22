@@ -223,7 +223,10 @@ PropertiesReader.prototype.set = function (key, value) {
       source = source[step]
    }
 
-   if (typeof parsedValue === 'string' && typeof  source[expanded[0]] === 'object') {
+   if (expanded[0] === '__proto__') {
+      Object.defineProperty(source, expanded[0], { value: parsedValue });
+   }
+   else if (typeof parsedValue === 'string' && typeof  source[expanded[0]] === 'object') {
       source[expanded[0]][''] = parsedValue;
    }
    else {
