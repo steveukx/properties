@@ -105,6 +105,13 @@ describe('Reader', () => {
       expect(properties.path().foo.bar).toBe('A Value');
    });
 
+   it('Property paths are enumerable', async () => {
+      await givenTheProperties('some.property=Value');
+
+      expect(Object.keys(properties.path())).toEqual(['some']);
+      expect(Object.keys(properties.path().some)).toEqual(['property']);
+   });
+
    it('Sets properties into an app', async () => {
       const set = jest.fn();
       (await givenTheProperties(`
