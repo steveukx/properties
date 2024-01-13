@@ -217,14 +217,14 @@ PropertiesReader.prototype.set = function (key, value) {
       }
 
       if (!has(source, step)) {
-         Object.defineProperty(source, step, { value: {} });
+         Object.defineProperty(source, step, { value: {}, enumerable: true });
       }
 
       source = source[step]
    }
 
    if (expanded[0] === '__proto__') {
-      Object.defineProperty(source, expanded[0], { value: parsedValue });
+      Object.defineProperty(source, expanded[0], { value: parsedValue, enumerable: true });
    }
    else if (typeof parsedValue === 'string' && typeof  source[expanded[0]] === 'object') {
       source[expanded[0]][''] = parsedValue;
