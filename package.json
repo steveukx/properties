@@ -22,7 +22,12 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",
     "@changesets/cli": "^2.29.8",
-    "jest": "^30.2.0"
+    "@swc/core": "^1.15.4",
+    "@swc/jest": "^0.2.39",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.0.1",
+    "jest": "^30.2.0",
+    "typescript": "^5.9.3"
   },
   "keywords": [
     "properties",
@@ -33,11 +38,14 @@
     "type": "git",
     "url": "git://github.com/steveukx/properties"
   },
-  "main": "src/properties-reader-factory",
+  "main": "dist/properties-reader-factory.js",
+  "types": "dist/properties-reader-factory.d.ts",
   "files": [
-    "src/**/*.js"
+    "dist/**/*"
   ],
   "scripts": {
+    "prepare": "npm run build",
+    "build": "tsc -p tsconfig.build.json",
     "preversion": "npm test",
     "postversion": "npm publish && git push && git push --tags",
     "test": "jest --coverage"
@@ -55,6 +63,27 @@
       "<rootDir>/src/",
       "<rootDir>/test/"
     ],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
+    "transform": {
+      "^.+\\.[tj]s$": [
+        "@swc/jest",
+        {
+          "jsc": {
+            "target": "es2019",
+            "parser": {
+              "syntax": "typescript"
+            }
+          },
+          "module": {
+            "type": "commonjs"
+          }
+        }
+      ]
+    },
     "coverageThreshold": {
       "global": {
         "branches": 80,
