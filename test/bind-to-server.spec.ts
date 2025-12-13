@@ -1,7 +1,6 @@
-const {createTestContext} = require('./__fixtues__/create-test-context');
-const {io} = require('./__fixtues__/io');
-
-const propertiesReader = require('../');
+import { createTestContext } from './__fixtues__/create-test-context';
+import { io } from './__fixtues__/io';
+import propertiesReader = require('../src/properties-reader-factory');
 
 describe('bind-to-server', () => {
 
@@ -73,4 +72,3 @@ describe('bind-to-server', () => {
    });
 
 });
-

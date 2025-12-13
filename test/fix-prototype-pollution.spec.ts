@@ -1,6 +1,5 @@
-const {createTestContext} = require('./__fixtues__/create-test-context');
-
-const propertiesReader = require('../');
+import { createTestContext } from './__fixtues__/create-test-context';
+import propertiesReader = require('../src/properties-reader-factory');
 
 describe('prototype-pollution', () => {
    let context;
