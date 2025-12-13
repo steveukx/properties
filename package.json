@@ -22,6 +22,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",
     "@changesets/cli": "^2.29.8",
+    "@kwsites/file-exists": "^1.1.1",
     "@swc/core": "^1.15.4",
     "@swc/jest": "^0.2.39",
     "@types/jest": "^30.0.0",
@@ -103,7 +104,10 @@
     ],
     "testMatch": [
       "**/test/**/*.spec.*"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^(.*/__fixtues__/.*)\\.ts$": "$1"
+    }
   },
   "packageManager": "yarn@4.12.0"
 }

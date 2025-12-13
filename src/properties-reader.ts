@@ -10,6 +10,11 @@ const has = Object.prototype.hasOwnProperty.call.bind(Object.prototype.hasOwnPro
 type PropertyAppender = (properties: PropertyRecord, key: string, value: string) => PropertyRecord;
 type PropertyWriter = ReturnType<typeof propertyWriter>;
 
+type ExpressAppLike = {
+   set (key: string, value: unknown): unknown;
+   locals?: Record<string, unknown>;
+}
+
 interface PropertiesReaderOptions extends AppenderOptions, PropertyWriterOptions {
    appender?: AppenderOptions | PropertyAppender;
    writer?: PropertyWriterOptions | PropertyWriter;
@@ -204,7 +209,7 @@ class PropertiesReader implements PropertiesIterable {
       return outObj;
    }
 
-   bindToExpress (app: { set: (key: string, value: any) => void; locals?: Record<string, any> }, basePath?: string, makePaths?: boolean): this {
+   bindToExpress (app: ExpressAppLike, basePath?: string | null, makePaths?: boolean): this {
       let resolvedBasePath = basePath || process.cwd();
 
       if (!/\/$/.test(resolvedBasePath)) {
