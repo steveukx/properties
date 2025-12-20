@@ -1,15 +1,14 @@
-import { createTestContext } from './__fixtues__/create-test-context';
-import propertiesReader = require('../src/properties-reader-factory');
+import { createTestContext, TestContext } from './__fixtues__/create-test-context';
+import { Reader } from '../src/properties-reader.types';
+import { mockPropertiesFactory } from './__fixtues__/mock-properties-factory';
 
 describe('section', () => {
 
-   let properties;
-   let context;
+   let properties: Reader;
+   let context: TestContext;
 
-   async function givenTheProperties (content) {
-      return properties = propertiesReader(
-         await context.file('props.ini', content)
-      );
+   async function givenTheProperties (content: string) {
+      return properties = await mockPropertiesFactory(context, content);
    }
 
    beforeEach(async () => context = await createTestContext());

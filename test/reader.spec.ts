@@ -1,15 +1,14 @@
-import { createTestContext } from './__fixtues__/create-test-context';
-import propertiesReader = require('../src/properties-reader-factory');
+import { createTestContext, TestContext } from './__fixtues__/create-test-context';
+import { Reader } from '../src/properties-reader.types';
+import { mockPropertiesFactory } from './__fixtues__/mock-properties-factory';
 
 describe('Reader', () => {
 
-   let properties;
-   let context;
+   let properties: Reader;
+   let context: TestContext;
 
-   async function givenTheProperties (content) {
-      return properties = propertiesReader(
-         await context.file('props.ini', content)
-      );
+   async function givenTheProperties (content: string) {
+      return properties = await mockPropertiesFactory(context, content);
    }
 
    beforeEach(async () => context = await createTestContext());
@@ -42,7 +41,7 @@ describe('Reader', () => {
       assertionsFor(jest.fn(), properties, (s, c) => properties.each(s));
       assertionsFor(jest.fn(), {a: 'bcd'}, (s, c) => properties.each(s, c));
 
-      function assertionsFor (theSpy, theContext, run) {
+      function assertionsFor<T, F extends jest.Mock> (theSpy: F, theContext: T, run: (s: F, c: T) => void) {
          run(theSpy, theContext);
 
          expect(theSpy).toHaveBeenCalledWith('a', '123');
@@ -100,8 +99,8 @@ describe('Reader', () => {
    it('Properties can be read back via their dot notation names', async () => {
       await givenTheProperties('\n\nsome.property=Value\n\nfoo.bar = A Value');
 
-      expect(properties.path().some.property).toBe('Value');
-      expect(properties.path().foo.bar).toBe('A Value');
+      expect(properties.path().some?.property).toBe('Value');
+      expect(properties.path().foo?.bar).toBe('A Value');
    });
 
    it('Sets properties into an app', async () => {
@@ -125,7 +124,7 @@ describe('Reader', () => {
 
       // raw access does not modify the new line characters
       expect(properties.getRaw('some.property')).toBe('Multi\\n Line \\nString');
-      expect(properties.path().some.property).toBe('Multi\\n Line \\nString');
+      expect(properties.path().some?.property).toBe('Multi\\n Line \\nString');
    });
 
    it('Returns null when getting a missing property', async () => {
@@ -175,13 +174,13 @@ describe('Reader', () => {
    it('getAllProperties returns properties map', async () => {
       await givenTheProperties(`
 
-         root.a.b = Hello
+         root.a.b = 1
          some.thing = Else
 
       `);
 
       expect(properties.getAllProperties()).toEqual({
-         'root.a.b': 'Hello',
+         'root.a.b': '1',
          'some.thing': 'Else'
       });
    });
