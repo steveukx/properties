@@ -27,7 +27,7 @@ function childBranch(parent: NestedPathBranch | null, child = ''): NestedPathBra
    return {
       dual: false,
       leaves: new Map(),
-      branches: {},
+      branches: Object.create(null),
       path: (parent?.path ? `${parent.path}.` : '') + child,
       parent
    };

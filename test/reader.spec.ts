@@ -7,7 +7,7 @@ describe('Reader', () => {
    let properties: Reader;
    let context: TestContext;
 
-   async function givenTheProperties (content: string) {
+   async function givenTheProperties(content: string) {
       return properties = await mockPropertiesFactory(context, content);
    }
 
@@ -33,21 +33,36 @@ describe('Reader', () => {
    });
 
    it('Runs a function across all items in the reader', async () => {
-      await givenTheProperties(
-         'a = 123\n' +
-         'b = true\n'
-      );
+      await givenTheProperties(`
+         a = 123
+         b = true
+      `);
 
       assertionsFor(jest.fn(), properties, (s, c) => properties.each(s));
       assertionsFor(jest.fn(), {a: 'bcd'}, (s, c) => properties.each(s, c));
 
-      function assertionsFor<T, F extends jest.Mock> (theSpy: F, theContext: T, run: (s: F, c: T) => void) {
+      function assertionsFor<T, F extends jest.Mock>(theSpy: F, theContext: T, run: (s: F, c: T) => void) {
          run(theSpy, theContext);
 
          expect(theSpy).toHaveBeenCalledWith('a', '123');
          expect(theSpy).toHaveBeenCalledWith('b', 'true');
          expect(theSpy.mock.instances).toEqual([theContext, theContext]);
       }
+   });
+
+   it('Iterates over all items in the reader', async () => {
+      await givenTheProperties(`
+         a = 123
+         b = true
+      `);
+      const spy = jest.fn();
+      for (const [key, value] of properties.entries()) {
+         spy(key, value);
+      }
+
+      expect(spy).toHaveBeenCalledWith('a', '123');
+      expect(spy).toHaveBeenCalledWith('b', 'true');
+      expect(spy).toHaveBeenCalledTimes(2);
    });
 
    it('Attempts type coercion', async () => {
@@ -197,7 +212,7 @@ describe('Reader', () => {
       all['root.a.b'] = 'New Value';
 
       expect(properties.getAllProperties()).toEqual({
-         'root.a.b': "Hello",
+         'root.a.b': 'Hello',
          'some.thing': 'Else'
       });
    });

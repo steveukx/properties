@@ -1,6 +1,7 @@
-const factory = import('./properties-reader-factory');
+import { createPropertiesReader } from './reader';
 
-export default factory;
+export default createPropertiesReader;
 
-export const propertiesReader = factory;
+export const propertiesReader = createPropertiesReader;
 
+export { bindToExpress, expressBasePath } from './bind-to-express';

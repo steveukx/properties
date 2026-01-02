@@ -1,6 +1,6 @@
 import { createTestContext, TestContext } from './__fixtues__/create-test-context';
 import { io } from './__fixtues__/io';
-import propertiesReader = require('../src/properties-reader-factory');
+import { expressBasePath, propertiesReader } from '../src';
 
 describe('bind-to-server', () => {
 
@@ -12,6 +12,14 @@ describe('bind-to-server', () => {
    beforeEach(async () => (context = await createTestContext()));
    afterEach(() => jest.restoreAllMocks());
 
+   it('generates a valid base path', async () => {
+      jest.spyOn(process, 'cwd').mockReturnValue('/foo/bar');
+
+      expect(expressBasePath()).toBe('/foo/bar/');
+      expect(expressBasePath('/baz/bat')).toBe('/baz/bat/');
+      expect(expressBasePath('/bat/baz/')).toBe('/bat/baz/');
+   })
+
    it('Creates directories when necessary - absolute paths', async () => {
       const dirPath = context.path('foo');
       const file = `
@@ -19,7 +27,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReader(await context.file('properties.ini', file))
+      propertiesReader().read(file)
          .bindToExpress(app, null, true);
 
       expect(io.isdir(dirPath)).toBe(true);
@@ -32,7 +40,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReader(await context.file('properties.ini', file))
+      propertiesReader().read(file)
          .bindToExpress(app, null, true);
 
       expect(io.isdir(dirPath)).toBe(true);
@@ -48,7 +56,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReader(await context.file('properties.ini', file))
+      propertiesReader().read(file)
          .bindToExpress(app, null, true);
 
       expect(io.isdir(dirPath)).toBe(true);
@@ -62,7 +70,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReader(await context.file('properties.ini', file))
+      propertiesReader().read(file)
          .bindToExpress(app, context.root, true);
 
       expect(io.isdir(dirPath)).toBe(true);

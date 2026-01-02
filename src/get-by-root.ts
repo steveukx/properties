@@ -1,16 +1,24 @@
 import { parseValue } from './parse-value';
+import type { ParsedValue } from './properties-reader.types';
 
 export function getByRoot(store: Map<string, string>, root = '') {
-   const prefix = root && `${root}.`;
-   const length = prefix.length;
+   return Object.fromEntries(parsedEntries(store, `${root}.`));
+}
 
-   if (!length) {
-      return Object.fromEntries(store);
+export function *parsedEntries(store: Map<string, string>, prefix = ''): MapIterator<[string, ParsedValue]> {
+   for (const [storeKey, storeValue] of store.entries()) {
+      const key = parsedKey(storeKey, prefix);
+      if (key) {
+         yield [key, parseValue(storeValue)];
+      }
    }
+}
 
-   return Object.fromEntries(
-      Array.from(store.entries(), ([key, value]) => {
-         return key.startsWith(prefix) ? [[key.substring(length), parseValue(value)]] : [];
-      }).flat()
-   );
+function parsedKey(key: string, prefix: string) {
+   if (!prefix) {
+      return key;
+   }
+   if (key.startsWith(prefix)) {
+      return key.substring(prefix.length);
+   }
 }

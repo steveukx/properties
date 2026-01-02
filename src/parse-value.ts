@@ -1,6 +1,6 @@
-import { Value } from './properties-reader.types';
+import { type ParsedValue } from './properties-reader.types';
 
-export function parseValue(input?: string): Value | null {
+export function parseValue(input?: string): ParsedValue {
    const parsedValue = ('' + input).trim();
    switch (parsedValue) {
       case 'undefined':
