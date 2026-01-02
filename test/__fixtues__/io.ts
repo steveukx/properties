@@ -5,6 +5,7 @@ import {
    writeFile as writeFile_async
 } from 'node:fs/promises'
 import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { exists, FOLDER } from '@kwsites/file-exists';
 
 export const isdir = (path: string) => {
@@ -25,7 +26,7 @@ export const mkdir = async (path: string) => {
 }
 
 export const mkdtemp = async () => {
-   return mkdtemp_async((process.env.TMPDIR || tmpdir()) + 'test-tmp-dir-');
+   return mkdtemp_async(join(process.env.TMPDIR || tmpdir(), 'test-tmp-dir-'));
 }
 
 export const readFile = async (path: string, encoding: BufferEncoding = 'utf-8') => {
