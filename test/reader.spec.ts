@@ -217,4 +217,11 @@ describe('Reader', () => {
       });
    });
 
+   it('Property paths are enumerable', async () => {
+      await givenTheProperties('some.property=Value');
+
+      expect(Object.keys(properties.path())).toEqual(['some']);
+      expect(Object.keys(properties.path().some)).toEqual(['property']);
+   });
+
 });
