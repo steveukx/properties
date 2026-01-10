@@ -1,6 +1,7 @@
 import { createTestContext, TestContext } from './__fixtues__/create-test-context';
 import { io } from './__fixtues__/io';
-import { expressBasePath, propertiesReader } from '../src';
+import { expressBasePath } from '../src';
+import { propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
 describe('bind-to-server', () => {
 
@@ -27,7 +28,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReader().read(file)
+      propertiesReaderFixture(file)
          .bindToExpress(app, null, true);
 
       expect(io.isdir(dirPath)).toBe(true);
@@ -40,7 +41,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReader().read(file)
+      propertiesReaderFixture(file)
          .bindToExpress(app, null, true);
 
       expect(io.isdir(dirPath)).toBe(true);
@@ -56,7 +57,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReader().read(file)
+      propertiesReaderFixture(file)
          .bindToExpress(app, null, true);
 
       expect(io.isdir(dirPath)).toBe(true);
@@ -70,7 +71,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReader().read(file)
+      propertiesReaderFixture(file)
          .bindToExpress(app, context.root, true);
 
       expect(io.isdir(dirPath)).toBe(true);

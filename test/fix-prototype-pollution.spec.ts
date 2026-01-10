@@ -1,4 +1,4 @@
-import { propertiesReader } from '../src';
+import { propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
 describe('prototype-pollution', () => {
    it('does not pollute global Object.prototype', async () => {
@@ -7,7 +7,7 @@ describe('prototype-pollution', () => {
             polluted = polluted
             parsed = true
       `;
-      const props = propertiesReader().read(file);
+      const props = propertiesReaderFixture(file);
 
       expect(({} as any).polluted).toBeUndefined();
       expect(props.path().__proto__.polluted).toBe('polluted');
@@ -22,7 +22,7 @@ describe('prototype-pollution', () => {
       const file = `
          __proto__ = 10
       `;
-      const props = propertiesReader().read(file);
+      const props = propertiesReaderFixture(file);
 
       expect(({} as any)['']).toBeUndefined();
       expect(props.path().__proto__).toBe('10');

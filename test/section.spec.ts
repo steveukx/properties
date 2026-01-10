@@ -1,17 +1,14 @@
-import { createTestContext, TestContext } from './__fixtues__/create-test-context';
+import { createTestContext } from './__fixtues__/create-test-context';
 import { Reader } from '../src/properties-reader.types';
-import { mockPropertiesFactory } from './__fixtues__/mock-properties-factory';
+import { propertiesFromFile } from './__fixtues__/mock-properties-factory';
 
 describe('section', () => {
 
    let properties: Reader;
-   let context: TestContext;
 
-   async function givenTheProperties (content: string) {
-      return properties = await mockPropertiesFactory(context, content);
+   async function givenTheProperties(content: string) {
+      return properties = await propertiesFromFile(await createTestContext(), content);
    }
-
-   beforeEach(async () => context = await createTestContext());
 
    it('Able to read URLs as part of a section', async () => {
       await givenTheProperties(`

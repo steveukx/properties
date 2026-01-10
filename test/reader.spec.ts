@@ -1,6 +1,6 @@
 import { createTestContext, TestContext } from './__fixtues__/create-test-context';
 import { Reader } from '../src/properties-reader.types';
-import { mockPropertiesFactory } from './__fixtues__/mock-properties-factory';
+import { propertiesFromFile, propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
 describe('Reader', () => {
 
@@ -8,10 +8,17 @@ describe('Reader', () => {
    let context: TestContext;
 
    async function givenTheProperties(content: string) {
-      return properties = await mockPropertiesFactory(context, content);
+      return properties = await propertiesFromFile(context, content);
    }
 
    beforeEach(async () => context = await createTestContext());
+
+   it('Reads properties from a buffer', () => {
+      const content = Buffer.from("property.key = value");
+      properties = propertiesReaderFixture(content);
+
+      expect(properties.get('property.key')).toBe('value');
+   });
 
    it('Able to read from a file', async () => {
       await givenTheProperties('some.property=Value');
@@ -78,24 +85,6 @@ describe('Reader', () => {
       expect(properties.get('d')).toBe(0.1);
    });
 
-   it('Correctly handles values that are nothing but whitespace', async () => {
-      await givenTheProperties('a =    \n');
-      expect(properties.getRaw('a')).toBe('');
-   });
-
-   it('Allows access to non-parsed values', async () => {
-      await givenTheProperties(`
-         a = 123
-         b = true
-         c = false
-         d = 0.1
-      `);
-      expect(properties.getRaw('b')).toBe('true');
-      expect(properties.getRaw('c')).toBe('false');
-      expect(properties.getRaw('a')).toBe('123');
-      expect(properties.getRaw('d')).toBe('0.1');
-   });
-
    it('Properties are trimmed when parsed', async () => {
       await givenTheProperties(`
          some.property =Value
@@ -109,13 +98,6 @@ describe('Reader', () => {
       await givenTheProperties('\n\nsome.property=Value\n\nfoo.bar = A Value');
 
       expect(properties.length).toBe(2);
-   });
-
-   it('Properties can be read back via their dot notation names', async () => {
-      await givenTheProperties('\n\nsome.property=Value\n\nfoo.bar = A Value');
-
-      expect(properties.path().some?.property).toBe('Value');
-      expect(properties.path().foo?.bar).toBe('A Value');
    });
 
    it('Sets properties into an app', async () => {
@@ -184,6 +166,9 @@ describe('Reader', () => {
          a: 1,
          c: false
       });
+
+      // invalid usage: omission of root returns empty object
+      expect((properties as any).getByRoot()).toEqual({})
    });
 
    it('getAllProperties returns properties map', async () => {

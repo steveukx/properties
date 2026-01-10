@@ -25,7 +25,7 @@ function append(sourceFile: string | undefined | null, encoding: BufferEncoding,
    return read(file, task);
 }
 
-function read(input: string, task = newTask()) {
+function read(input: string, task: ReadLineTask): ReadLineTask {
    return String(input).split('\n').reduce<ReadLineTask>(
       (task, line) => {
          return readLine(line, task);
@@ -34,7 +34,7 @@ function read(input: string, task = newTask()) {
    );
 }
 
-function readLine(line: string, task = newTask()) {
+function readLine(line: string, task: ReadLineTask): ReadLineTask {
    const trimmed = line.trim();
    if (!trimmed) {
       return task;

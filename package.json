@@ -39,14 +39,17 @@
     "type": "git",
     "url": "git://github.com/steveukx/properties"
   },
-  "main": "dist/properties-reader-factory.js",
-  "types": "dist/properties-reader-factory.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "dist/**/*"
+    "dist"
   ],
   "scripts": {
+    "build:defs": "tsc -p tsconfig.release.json --outDir dist",
+    "build:compile": "tsc -p tsconfig.build.json",
+    "build": "yarn build:defs && yarn build:compile",
+    "clean": "git clean -fxd coverage dist",
     "prepare": "npm run build",
-    "build": "tsc -p tsconfig.build.json",
     "preversion": "npm test",
     "postversion": "npm publish && git push && git push --tags",
     "test": "jest --coverage"
@@ -56,58 +59,8 @@
     "url": "https://github.com/steveukx/properties?sponsor=1"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   },
   "license": "MIT",
-  "jest": {
-    "roots": [
-      "<rootDir>/src/",
-      "<rootDir>/test/"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json"
-    ],
-    "transform": {
-      "^.+\\.[tj]s$": [
-        "@swc/jest",
-        {
-          "jsc": {
-            "target": "es2019",
-            "parser": {
-              "syntax": "typescript"
-            }
-          },
-          "module": {
-            "type": "commonjs"
-          }
-        }
-      ]
-    },
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    },
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/test/"
-    ],
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "text",
-      "clover"
-    ],
-    "testMatch": [
-      "**/test/**/*.spec.*"
-    ],
-    "moduleNameMapper": {
-      "^(.*/__fixtues__/.*)\\.ts$": "$1"
-    }
-  },
   "packageManager": "yarn@4.12.0"
 }

@@ -1,6 +1,6 @@
 import { createTestContext, TestContext } from './__fixtues__/create-test-context';
 import { Reader } from '../src/properties-reader.types';
-import { mockPropertiesFactory } from './__fixtues__/mock-properties-factory';
+import { propertiesFromFile } from './__fixtues__/mock-properties-factory';
 import { PropertiesFactoryOptions } from '../src/reader';
 import { readFile } from './__fixtues__/io';
 
@@ -11,7 +11,7 @@ describe('writer', () => {
    let outputFile: string;
 
    async function givenTheProperties(content: string, options: Partial<PropertiesFactoryOptions> = {}) {
-      return properties = await mockPropertiesFactory(context, content, options);
+      return properties = await propertiesFromFile(context, content, options);
    }
 
    beforeEach(async () => {

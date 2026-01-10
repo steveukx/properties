@@ -11,8 +11,9 @@ type NestedPath = Record<string, NestedPathBranch>;
 
 function addLeaf(branch: NestedPathBranch, leaf: string, key: string) {
    branch.leaves.set(leaf, key);
+
    if (Object.hasOwn(branch.branches, leaf)) {
-      branch.dual = true;
+      branch.branches[leaf].dual = true;
    }
 }
 function addBranch(branch: NestedPathBranch, token: string) {

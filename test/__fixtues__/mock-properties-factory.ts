@@ -1,11 +1,21 @@
 import { createPropertiesReader, PropertiesFactoryOptions } from '../../src/reader';
 import { TestContext } from './create-test-context';
 
-export async function mockPropertiesFactory({file}: TestContext, content: string, options: Pick<PropertiesFactoryOptions, 'allowDuplicateSections' | 'saveSections'> = {}) {
-   const sourceFile = await file('props.ini', content);
+const legacy = require('old-properties-reader');
 
-   return createPropertiesReader({
+export async function propertiesFromFile({file}: TestContext, content: string, options: Pick<PropertiesFactoryOptions, 'allowDuplicateSections' | 'saveSections'> = {}) {
+   return propertiesReaderFixture('', {
       ...options,
-      sourceFile,
+      sourceFile: await file('props.ini', content),
    });
+}
+
+export function propertiesReaderFixture(content: string | Buffer = '', options: Pick<PropertiesFactoryOptions, 'allowDuplicateSections' | 'saveSections' | 'sourceFile'> = {}) {
+   const props = createPropertiesReader(options);
+
+   // const props = legacy( options.sourceFile, 'utf8', options);
+   if (content) {
+      props.read(content);
+   }
+   return props;
 }
