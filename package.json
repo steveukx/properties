@@ -28,6 +28,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^25.0.1",
     "jest": "^30.2.0",
+    "tsup": "^8.5.0",
     "typescript": "^5.9.3"
   },
   "keywords": [
@@ -39,15 +40,21 @@
     "type": "git",
     "url": "git://github.com/steveukx/properties"
   },
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build:defs": "tsc -p tsconfig.release.json --outDir dist",
-    "build:compile": "tsc -p tsconfig.build.json",
-    "build": "yarn build:defs && yarn build:compile",
+    "build": "tsup",
     "clean": "git clean -fxd coverage dist",
     "prepare": "npm run build",
     "preversion": "npm test",
