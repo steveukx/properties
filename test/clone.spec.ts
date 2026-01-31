@@ -1,5 +1,5 @@
 import { propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
-import { Reader } from '../src/properties-reader.types';
+import type { Reader } from 'properties-reader';
 
 describe('clone', () => {
 

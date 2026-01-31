@@ -1,4 +1,4 @@
-import { createPropertiesReader, PropertiesFactoryOptions } from '../../src/reader';
+import { propertiesReader, type PropertiesFactoryOptions } from 'properties-reader';
 import { TestContext } from './create-test-context';
 
 export async function propertiesFromFile({file}: TestContext, content: string, options: Pick<PropertiesFactoryOptions, 'allowDuplicateSections' | 'saveSections'> = {}) {
@@ -9,7 +9,7 @@ export async function propertiesFromFile({file}: TestContext, content: string, o
 }
 
 export function propertiesReaderFixture(content: string | Buffer = '', options: Pick<PropertiesFactoryOptions, 'allowDuplicateSections' | 'saveSections' | 'sourceFile'> = {}) {
-   const props = createPropertiesReader(options);
+   const props = propertiesReader(options);
    if (content) {
       props.read(content);
    }

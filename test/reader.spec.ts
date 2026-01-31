@@ -1,5 +1,5 @@
 import { createTestContext, TestContext } from './__fixtues__/create-test-context';
-import { Reader } from '../src/properties-reader.types';
+import type { Reader } from 'properties-reader';
 import { propertiesFromFile, propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
 describe('Reader', () => {

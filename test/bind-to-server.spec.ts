@@ -1,6 +1,6 @@
 import { createTestContext, TestContext } from './__fixtues__/create-test-context';
 import { io } from './__fixtues__/io';
-import { expressBasePath } from '../src';
+import { expressBasePath } from 'properties-reader';
 import { propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
 describe('bind-to-server', () => {

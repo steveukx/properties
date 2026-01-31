@@ -1,5 +1,5 @@
 import { createTestContext } from './__fixtues__/create-test-context';
-import { Reader } from '../src/properties-reader.types';
+import type { Reader } from 'properties-reader';
 import { propertiesFromFile } from './__fixtues__/mock-properties-factory';
 
 describe('section', () => {

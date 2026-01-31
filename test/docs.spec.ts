@@ -1,5 +1,4 @@
-import { Reader } from '../src/properties-reader.types';
-import { propertiesReader } from '../src';
+import { propertiesReader, type Reader } from 'properties-reader';
 
 describe('Docs', () => {
 
