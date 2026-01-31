@@ -3,6 +3,8 @@ Properties-Reader
 
 An ini file compatible properties reader for [Node.JS](http://nodejs.org)
 
+See the [upgrade guide](#upgrading-v2-to-v3) for how to upgrade between major version 2 and 3.
+
 Installation
 ============
 
