@@ -17,12 +17,12 @@
     }
   ],
   "dependencies": {
+    "@kwsites/file-exists": "^1.1.1",
     "mkdirp": "^3.0.1"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",
     "@changesets/cli": "^2.29.8",
-    "@kwsites/file-exists": "^1.1.1",
     "@swc/core": "^1.15.4",
     "@swc/jest": "^0.2.39",
     "@types/jest": "^30.0.0",
@@ -40,7 +40,6 @@
     "type": "git",
     "url": "git://github.com/steveukx/properties"
   },
-
   "publish": {
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
@@ -58,15 +57,13 @@
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
-
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsup",
-    "build:pkg": "node scripts/package-json.js",
+    "build:pkg": "node .ci/package-json.mjs",
     "prepublishOnly": "yarn build:pkg",
-
     "clean": "git clean -fxd coverage dist",
     "prepare": "npm run build",
     "preversion": "npm test",

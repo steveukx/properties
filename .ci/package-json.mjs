@@ -1,9 +1,9 @@
-import { writeFile, readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { readFile, writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { logger } from './logger.mjs';
 
 const log = logger('package.json');
-const src = resolve(__dirname, '..', 'package.json');
+const src = fileURLToPath(new URL('../package.json', import.meta.url));
 
 (async () => {
    log('Reading');
@@ -25,7 +25,12 @@ function read() {
 }
 
 function mutate(json) {
-   const { publish, scripts, ...pkg } = json;
+   const {
+      publish,
+      scripts,
+      packageManager,
+      devDependencies,
+      ...pkg } = json;
 
    return {
       ...pkg,

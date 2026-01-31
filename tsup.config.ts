@@ -5,7 +5,7 @@ const shared = {
   bundle: true,
   skipNodeModulesBundle: true,
   splitting: false,
-  sourcemap: false,
+  sourcemap: true,
   target: "es2022",
 };
 
@@ -16,6 +16,7 @@ export default defineConfig([
     outDir: "dist/cjs",
     clean: true,
      outExtension: () => ({ js: ".cjs" }),
+
   },
   {
     ...shared,
