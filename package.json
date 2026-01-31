@@ -44,18 +44,18 @@
   "publish": {
     "main": "dist/cjs/index.cjs",
     "module": "dist/esm/index.mjs",
-    "types": "./dist/typings/index.d.ts",
+    "types": "./dist/types/index.d.ts",
     "exports": {
       ".": {
         "import": {
           "default": "./dist/esm/index.mjs",
-          "types": "./dist/typings/index.d.mts"
+          "types": "./dist/types/index.d.mts"
         },
         "require": {
           "default": "./dist/cjs/index.cjs",
-          "types": "./dist/typings/index.d.ts"
+          "types": "./dist/types/index.d.ts"
         },
-        "types": "./dist/typings/index.d.ts"
+        "types": "./dist/types/index.d.ts"
       }
     }
   },
