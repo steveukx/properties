@@ -26,7 +26,7 @@ export default defineConfig([
    },
    {
       entry: ['src/index.ts'],
-      format: ['esm'],
+      format: ['esm', 'cjs'],
       outDir: 'dist/types',
       dts: { only: true },
       clean: false,
