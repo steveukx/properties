@@ -15,7 +15,10 @@
       "node",
       "jest"
     ],
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "properties-reader": ["./"]
+    }
   },
   "include": [
     "src",

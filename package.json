@@ -40,21 +40,33 @@
     "type": "git",
     "url": "git://github.com/steveukx/properties"
   },
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
+
+  "publish": {
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
+    "types": "./dist/typings/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/typings/index.d.ts",
+        "import": "./dist/esm/index.mjs",
+        "require": "./dist/cjs/index.js"
+      },
+      "./promise": {
+        "require": "./promise.js"
+      }
     }
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsup",
+    "build:pkg": "node scripts/package-json.js",
+    "prepublishOnly": "yarn build:pkg",
+
     "clean": "git clean -fxd coverage dist",
     "prepare": "npm run build",
     "preversion": "npm test",
