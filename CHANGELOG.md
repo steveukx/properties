@@ -1,5 +1,11 @@
 # properties-reader
 
+## 3.0.1
+
+### Patch Changes
+
+- a9f8d0d: Resolve path to Update path to TypeScript types in published package.json, to allow importing into a TS application
+
 ## 3.0.0
 
 ### Major Changes
