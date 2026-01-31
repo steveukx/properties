@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+
 import { logger } from './logger.mjs';
 
 const log = logger('package.json');
@@ -20,17 +21,11 @@ function save(content) {
 }
 
 function read() {
-   return readFile(src, 'utf8')
-      .then(content => JSON.parse(String(content)));
+   return readFile(src, 'utf8').then((content) => JSON.parse(String(content)));
 }
 
 function mutate(json) {
-   const {
-      publish,
-      scripts,
-      packageManager,
-      devDependencies,
-      ...pkg } = json;
+   const { publish, scripts, packageManager, devDependencies, ...pkg } = json;
 
    return {
       ...pkg,

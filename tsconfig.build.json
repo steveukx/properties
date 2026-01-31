@@ -5,12 +5,8 @@
     "declaration": true,
     "declarationMap": false,
     "sourceMap": false,
-    "outDir": "dist",
+    "outDir": "dist"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "test"
-  ]
+  "include": ["src"],
+  "exclude": ["test"]
 }
