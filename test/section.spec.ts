@@ -1,19 +1,14 @@
-const {createTestContext} = require('./__fixtues__/create-test-context');
+import type { Reader } from 'properties-reader';
 
-const propertiesReader = require('../');
+import { createTestContext } from './__fixtues__/create-test-context';
+import { propertiesFromFile } from './__fixtues__/mock-properties-factory';
 
 describe('section', () => {
+   let properties: Reader;
 
-   let properties;
-   let context;
-
-   async function givenTheProperties (content) {
-      return properties = propertiesReader(
-         await context.file('props.ini', content)
-      );
+   async function givenTheProperties(content: string) {
+      return (properties = await propertiesFromFile(await createTestContext(), content));
    }
-
-   beforeEach(async () => context = await createTestContext());
 
    it('Able to read URLs as part of a section', async () => {
       await givenTheProperties(`
@@ -43,7 +38,7 @@ thing = 123
 
       expect(properties.get('section')).toBe('value');
       expect(properties.get('section.sub')).toBe('property');
-      expect(properties.path().section).toEqual({'': 'value', 'sub': 'property'});
+      expect(properties.path().section).toEqual({ '': 'value', 'sub': 'property' });
    });
 
    it('Ignores comment blocks', async () => {
@@ -90,5 +85,4 @@ thing = 123
       `);
       expect(properties.path()['submodule foo'].another.property).toBe('Something');
    });
-
 });

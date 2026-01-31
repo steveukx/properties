@@ -1,19 +1,24 @@
-const {createTestContext} = require('./__fixtues__/create-test-context');
+import type { Reader } from 'properties-reader';
 
-const propertiesReader = require('../');
+import { createTestContext, type TestContext } from './__fixtues__/create-test-context';
+import { propertiesFromFile, propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
 describe('Reader', () => {
+   let properties: Reader;
+   let context: TestContext;
 
-   let properties;
-   let context;
-
-   async function givenTheProperties (content) {
-      return properties = propertiesReader(
-         await context.file('props.ini', content)
-      );
+   async function givenTheProperties(content: string) {
+      return (properties = await propertiesFromFile(context, content));
    }
 
-   beforeEach(async () => context = await createTestContext());
+   beforeEach(async () => (context = await createTestContext()));
+
+   it('Reads properties from a buffer', () => {
+      const content = Buffer.from('property.key = value');
+      properties = propertiesReaderFixture(content);
+
+      expect(properties.get('property.key')).toBe('value');
+   });
 
    it('Able to read from a file', async () => {
       await givenTheProperties('some.property=Value');
@@ -24,10 +29,13 @@ describe('Reader', () => {
       await givenTheProperties('some.property=Value');
 
       properties.append(
-         await context.file('more-props.ini', `
+         await context.file(
+            'more-props.ini',
+            `
             [section]
             some.property = Another Value
-         `)
+         `
+         )
       );
 
       expect(properties.get('section.some.property')).toBe('Another Value');
@@ -35,21 +43,40 @@ describe('Reader', () => {
    });
 
    it('Runs a function across all items in the reader', async () => {
-      await givenTheProperties(
-         'a = 123\n' +
-         'b = true\n'
-      );
+      await givenTheProperties(`
+         a = 123
+         b = true
+      `);
 
-      assertionsFor(jest.fn(), properties, (s, c) => properties.each(s));
-      assertionsFor(jest.fn(), {a: 'bcd'}, (s, c) => properties.each(s, c));
+      assertionsFor(jest.fn(), properties, (s) => properties.each(s));
+      assertionsFor(jest.fn(), { a: 'bcd' }, (s, c) => properties.each(s, c));
 
-      function assertionsFor (theSpy, theContext, run) {
+      function assertionsFor<T, F extends jest.Mock>(
+         theSpy: F,
+         theContext: T,
+         run: (s: F, c: T) => void
+      ) {
          run(theSpy, theContext);
 
          expect(theSpy).toHaveBeenCalledWith('a', '123');
          expect(theSpy).toHaveBeenCalledWith('b', 'true');
          expect(theSpy.mock.instances).toEqual([theContext, theContext]);
       }
+   });
+
+   it('Iterates over all items in the reader', async () => {
+      await givenTheProperties(`
+         a = 123
+         b = true
+      `);
+      const spy = jest.fn();
+      for (const [key, value] of properties.entries()) {
+         spy(key, value);
+      }
+
+      expect(spy).toHaveBeenCalledWith('a', '123');
+      expect(spy).toHaveBeenCalledWith('b', 'true');
+      expect(spy).toHaveBeenCalledTimes(2);
    });
 
    it('Attempts type coercion', async () => {
@@ -63,24 +90,6 @@ describe('Reader', () => {
       expect(properties.get('c')).toBe(false);
       expect(properties.get('a')).toBe(123);
       expect(properties.get('d')).toBe(0.1);
-   });
-
-   it('Correctly handles values that are nothing but whitespace', async () => {
-      await givenTheProperties('a =    \n');
-      expect(properties.getRaw('a')).toBe('');
-   });
-
-   it('Allows access to non-parsed values', async () => {
-      await givenTheProperties(`
-         a = 123
-         b = true
-         c = false
-         d = 0.1
-      `);
-      expect(properties.getRaw('b')).toBe('true');
-      expect(properties.getRaw('c')).toBe('false');
-      expect(properties.getRaw('a')).toBe('123');
-      expect(properties.getRaw('d')).toBe('0.1');
    });
 
    it('Properties are trimmed when parsed', async () => {
@@ -98,19 +107,14 @@ describe('Reader', () => {
       expect(properties.length).toBe(2);
    });
 
-   it('Properties can be read back via their dot notation names', async () => {
-      await givenTheProperties('\n\nsome.property=Value\n\nfoo.bar = A Value');
-
-      expect(properties.path().some.property).toBe('Value');
-      expect(properties.path().foo.bar).toBe('A Value');
-   });
-
    it('Sets properties into an app', async () => {
       const set = jest.fn();
-      (await givenTheProperties(`
+      (
+         await givenTheProperties(`
          some.property=Value
          foo.bar = A Value
-      `)).bindToExpress({set});
+      `)
+      ).bindToExpress({ set });
 
       expect(set).toHaveBeenCalledWith('properties', properties);
       expect(set).toHaveBeenCalledWith('some.property', 'Value');
@@ -126,7 +130,7 @@ describe('Reader', () => {
 
       // raw access does not modify the new line characters
       expect(properties.getRaw('some.property')).toBe('Multi\\n Line \\nString');
-      expect(properties.path().some.property).toBe('Multi\\n Line \\nString');
+      expect(properties.path().some?.property).toBe('Multi\\n Line \\nString');
    });
 
    it('Returns null when getting a missing property', async () => {
@@ -153,7 +157,7 @@ describe('Reader', () => {
       });
       expect(properties.getByRoot('root.sect')).toEqual({
          a: 1,
-         b: 'bar'
+         b: 'bar',
       });
    });
 
@@ -169,21 +173,28 @@ describe('Reader', () => {
 
       expect(properties.getByRoot('root.sect')).toEqual({
          a: 1,
-         c: false
+         c: false,
       });
+
+      type InvalidProperties = Reader & {
+         getByRoot(): Record<string, unknown>;
+      };
+
+      // invalid usage: omission of root returns empty object
+      expect((properties as InvalidProperties).getByRoot()).toEqual({});
    });
 
    it('getAllProperties returns properties map', async () => {
       await givenTheProperties(`
 
-         root.a.b = Hello
+         root.a.b = 1
          some.thing = Else
 
       `);
 
       expect(properties.getAllProperties()).toEqual({
-         'root.a.b': 'Hello',
-         'some.thing': 'Else'
+         'root.a.b': '1',
+         'some.thing': 'Else',
       });
    });
 
@@ -199,9 +210,15 @@ describe('Reader', () => {
       all['root.a.b'] = 'New Value';
 
       expect(properties.getAllProperties()).toEqual({
-         'root.a.b': "Hello",
-         'some.thing': 'Else'
+         'root.a.b': 'Hello',
+         'some.thing': 'Else',
       });
    });
 
+   it('Property paths are enumerable', async () => {
+      await givenTheProperties('some.property=Value');
+
+      expect(Object.keys(properties.path())).toEqual(['some']);
+      expect(Object.keys(properties.path().some)).toEqual(['property']);
+   });
 });

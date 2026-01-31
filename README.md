@@ -6,7 +6,7 @@ An ini file compatible properties reader for [Node.JS](http://nodejs.org)
 Installation
 ============
 
-The easiest installation is through [NPM](http://npmjs.org):
+The easiest installation is through [NPM](https://www.npmjs.com/package/properties-reader):
 
     npm install properties-reader
 
@@ -15,17 +15,30 @@ API
 
 Read properties from a file:
 
-    var propertiesReader = require('properties-reader');
-    var properties = propertiesReader('/path/to/properties.file');
+    import { propertiesReader } from 'properties-reader';
 
-The properties are then accessible either by fully qualified name, or if the property names are in dot-delimited
-notation, they can be access as an object:
+    const properties = propertiesReader({ sourceFile: '/path/to/properties.file' });
+
+The properties are then accessible either by fully qualified name, or if the property names
+are in dot-delimited notation, they can be accessed as an object:
 
     // fully qualified name
-    var property = properties.get('some.property.name');
+    const property = properties.get('some.property.name');
 
-    // by object path
-    var property = properties.path().some.property.name;
+    // lazily evaluated nested object path
+    const property = properties.path().some?.property?.name;
+
+    // flatten all properties into an object
+    const obj = Object.from(properties.entries())
+    const property = obj['some.property.name'];
+
+    // flatten all properties into an object - with value parsing
+    const obj = Object.from(properties.entries({ parsed: true }))
+    const property = obj['some.property.name'];
+
+    // eagerly evaluate a subset of properties into an object
+    const obj = properties.getByRoot('some.property')
+    const property = obj.name;
 
 To read more than one file, chain calls to the `.append()` method:
 
@@ -33,93 +46,178 @@ To read more than one file, chain calls to the `.append()` method:
 
 To read properties from a string, use the `.read()` method:
 
-    properties.read('some.property = Value \n another.property = Another Value');
+    properties.read(`
+      some.property = Value
+      another.property = Another Value
+    `);
 
 To set a single property into the properties object, use `.set()`:
 
     properties.set('property.name', 'Property Value');
 
-When reading a `.ini` file, sections are created by having a line that contains just a section name in square
-brackets. The section name is then prefixed to all property names that follow it until another section name is found
-to replace the current section.
+When reading a `.ini` file, sections are created by having a line that contains just a
+section name in square brackets. The section name is then prefixed to all property names
+that follow it until another section name is found to replace the current section.
 
     # contents of properties file
     [main]
     some.thing = foo
 
     [blah]
-    some.thing = bar
+    something.numeric = 123
 
     // reading these back from the properties reader
     properties.get('main.some.thing') == 'foo';
-    properties.get('blah.some.thing') == 'bar';
-    
-    // looping through the properties reader
-    properties.each((key, value) => {
-      // called for each item in the reader,
-      // first with key=main.some.thing, value=foo
-      // next with key=blah.some.thing, value=bar
-    });
-    
-    // get all properties at once
-    expect(properties.getAllProperties()).toEqual({
-      'main.some.thing': 'foo',
-      'blah.some.thing': 'bar',
+    properties.get('blah.something.numeric') == 123;
+
+    // iterator access for all properties - not parsed (ie: always string values)
+    for (const [key, value] of properties.entries()) {
+      // loops through each entry, for example:
+      // key="main.some.thing", value="foo"
+      // key="blah.something.numeric", value="123"
+    }
+
+    // iterator access for all properties - parsed
+    for (const [key, value] of properties.entries({ parsed: true })) {
+      // loops through each entry, for example:
+      // key="main.some.thing", value="foo"
+      // key="blah.something.numeric", value=123 <-- note, is now a number
+    }
+
+    // get subset of properties
+    expect(properties.getByRoot('blah')).toEqual({
+      'something.numeric': 123,
     })
     
 
 Checking for the current number of properties that have been read into the reader:
 
-    var propertiesCount = properties.length;
+    const propertiesCount = properties.length;
 
-The length is calculated on request, so if accessing this in a loop an efficiency would be achieved by caching the
-value.
-
-When duplicate names are found in the properties, the first one read will be replaced with the later one.
-
-To get the complete set of properties, either loop through them with the `.each((key, value) => {})` iterator or
-use the convenience method `getAllProperties` to return the complete set of flattened properties. 
+When duplicate names are found in the properties, the first one read will be replaced with
+the later one.
 
 ### Saving changes
 
-Once a file has been read and changes made, saving those changes to another file is as simple as running:
+Once a file has been read and changes made, saving those changes to another
+file is as simple as running:
 
-```javascript
-// async/await ES6
-const propertiesReader = require('properties-reader');
-const props = propertiesReader(filePath, {writer: { saveSections: true }});
-await props.save(filePath);
+```typescript
+import { propertiesReader } from 'properties-reader';
 
-// ES5 callback styles
-props.save(filePath, function then(err, data) { ... });
+const sourceFile = 'properties.ini'
+const props = propertiesReader({ sourceFile, saveSections: true });
 
-// ES5 promise style
-props.save(filePath).then(onSaved, onSaveError);
+props.set('new.property', 'new value');
+
+await props.save(sourceFile);
 ```
 
-To output the properties without any section headings, set the `saveSections` option to `false`
+To output the properties without any section headings, set the
+`saveSections` option to `false`.
 
-Data Types
+Parsed Data Types
 ==========
 
-Properties will automatically be converted to their regular data types when they represent true/false or numeric
-values. To get the original value without any parsing / type coercion applied, use `properties.getRaw('path.to.prop')`.
+Properties are automatically converted to their primitive data types
+when using `properties.get(key)` if they represent `true`, `false` or
+numeric values.
+
+To get the original value without any parsing / type coercion applied,
+use `properties.getRaw(key)`.
+
+
+Upgrading V2 to V3
+===============
+
+- Import the `propertiesReader` named factory function instead of the
+  package default export.
+
+  ```
+  // v2
+  const propertiesReader = require('properties-reader');
+  
+  // v3 - default and named import
+  import propertiesReader from 'properties-reader';
+  import { propertiesReader } from 'properties-reader';
+  
+  // v3 - named property on require
+  const { propertiesReader } = require('properties-reader');
+  ```
+
+- All factory arguments are now supplied in a single options object
+
+  ```
+  const options = { allowDuplicateSections, saveSections };
+
+  // v2
+  props = propertiesReader(sourceFile, encoding, options);
+  
+  // v3
+  propertiesReader({
+    sourceFile,
+    encoding,
+    ...options,
+  });
+  ```
+
+- Custom `appender` and `writer` functions are no longer supported as
+  configuration options, instead use the `props.entries()` or `props.out()`
+  iterators to gain access to the data within the reader:
+
+  ```
+  // v2
+  propertiesReader(sourceFile, encoding, {
+    writer (reader, filePath, onComplete) { }
+  })
+  
+  // v3
+  fs.writeFile(`props.ini`, Array.from(props.out()).join('\n'), 'utf8');
+  ```
+  
+  As the `props.out()` method returns an iterator, you can now transform the
+  output as necessary, in this basic example simply joining as an array - for
+  very large files this should be written to the file line by line.
+
+- TypeScript types are now published as part of the `properties-reader` package,
+  so `@type/properties-reader` can now be safely removed as a dependency.
 
 FAQ / Breaking Changes
 ======================
 
+From version `3.0.0` the following have changed:
+
+- To improve performance when reading properties files, nested properties
+  will no longer be eagerly evaluated meaning `getRaw`
+
+- `propertiesReader(...)` now consumes a single object of options, see above
+  for how to supply `sourceFile` and `encoding` options that were previously
+  position based arguments.
+
+- Custom property appender/writer functions are no longer supported,
+  removes support for passing functions as `appender` or `writer`
+  configuration properties.
+
+- `props.save(destFile)` now returns a `Promise<void>` that resolves once the
+  file has been written. It will no longer return the generated content to
+  avoid needlessly building it in memory, to use the generated file content
+  switch to using the `props.out()` function to get an iterator for the
+  output file content.
+
+- `props.save(destFile)` will now write a file that includes a trailing new line.
+
 ## Duplicate Section Headings
 
-From version `2.0.0` the default behaviour relating to multiple `[section]` blocks with the same name has changed
-so combine the items of each same-named section into the one section. This is only visible when saving the items
-(via `reader.save()`).
+The `properties-reader` automatically supports sections in the properties file, merging duplicate
+sections together when generating the output file contents with `props.out()` or `props.save()`.
 
-To restore the previous behaviour which would allow duplicate `[...]` blocks to be created, supply an appender
-configuration with the property `allowDuplicateSections` set to `true`.
+Where duplicate sections are found in the `sourceFile` they can be kept in the output by setting
+`allowDuplicateSections: true` in the `propertiesReader` factory function.
 
-```javascript
-const propertiesReader = require('properties-reader');
-const props = propertiesReader(filePath, 'utf-8', { allowDuplicateSections: true });
+```typescript
+import { propertiesReader } from 'properties-reader';
+
+const props = propertiesReader({ sourceFile, allowDuplicateSections: true });
 ```
 
 Contributions

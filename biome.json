@@ -1,0 +1,73 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              ":URL:",
+              ":NODE:",
+              ":BLANK_LINE:",
+              [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"],
+              ":BLANK_LINE:",
+              ":ALIAS:",
+              ":PATH:"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "bracketSameLine": true,
+      "bracketSpacing": true,
+      "indentWidth": 3,
+      "quoteProperties": "preserve",
+      "quoteStyle": "single",
+      "semicolons": "always",
+      "trailingCommas": "es5"
+    },
+    "globals": ["Buffer"]
+  },
+  "linter": {
+    "rules": {
+      "style": {
+        "noNonNullAssertion": "off"
+      },
+      "suspicious": {
+        "noAssignInExpressions": "off",
+        "noGlobalIsNan": "off"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["test/**"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noBannedTypes": "off",
+            "useArrowFunction": "off"
+          },
+          "style": {},
+          "suspicious": {}
+        }
+      }
+    }
+  ],
+  "files": {
+    "includes": ["**/*.{js,mjs,ts,json,yml}", "!{.changeset,.idea,coverage,dist,node_modules}/"]
+  }
+}
