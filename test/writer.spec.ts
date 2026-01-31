@@ -1,16 +1,19 @@
-import { createTestContext, TestContext } from './__fixtues__/create-test-context';
 import type { PropertiesFactoryOptions, Reader } from 'properties-reader';
-import { propertiesFromFile } from './__fixtues__/mock-properties-factory';
+
+import { createTestContext, type TestContext } from './__fixtues__/create-test-context';
 import { readFile } from './__fixtues__/io';
+import { propertiesFromFile } from './__fixtues__/mock-properties-factory';
 
 describe('writer', () => {
-
    let properties: Reader;
    let context: TestContext;
    let outputFile: string;
 
-   async function givenTheProperties(content: string, options: Partial<PropertiesFactoryOptions> = {}) {
-      return properties = await propertiesFromFile(context, content, options);
+   async function givenTheProperties(
+      content: string,
+      options: Partial<PropertiesFactoryOptions> = {}
+   ) {
+      return (properties = await propertiesFromFile(context, content, options));
    }
 
    beforeEach(async () => {
@@ -56,28 +59,33 @@ property4=Value4
       `;
 
       it('can remove sections from output entirely', async () => {
-         await givenTheProperties(inputContent, {saveSections: false});
-         expect(thePropertiesOutput()).toEqual([`property1=Value1`,
+         await givenTheProperties(inputContent, { saveSections: false });
+         expect(thePropertiesOutput()).toEqual([
+            `property1=Value1`,
             'main.property2=Value2',
             'main.property4=Value4',
-            `second.property3=Value3`
+            `second.property3=Value3`,
          ]);
       });
 
       it('Duplicate sections permitted', async () => {
-         await givenTheProperties(inputContent, {allowDuplicateSections: true});
+         await givenTheProperties(inputContent, { allowDuplicateSections: true });
 
-         expect(thePropertiesOutput()).toEqual([`property1=Value1`,
+         expect(thePropertiesOutput()).toEqual([
+            `property1=Value1`,
             '[main]',
             'property2=Value2',
             '[second]',
             'property3=Value3',
             '[main]',
-            `property4=Value4`]);
+            `property4=Value4`,
+         ]);
       });
 
       it('Duplicate sections not permitted', async () => {
-         await givenTheProperties(inputContent, { /* default behaviour... allowDuplicateSections: false */});
+         await givenTheProperties(inputContent, {
+            /* default behaviour... allowDuplicateSections: false */
+         });
 
          expect(thePropertiesOutput()).toEqual([
             'property1=Value1',
@@ -85,9 +93,9 @@ property4=Value4
             'property2=Value2',
             'property4=Value4',
             '[second]',
-            'property3=Value3']);
+            'property3=Value3',
+         ]);
       });
-
    });
 
    it('Able to stringify properties after set', async () => {
@@ -121,11 +129,7 @@ property4=Value4
 
       properties.set('s2.s2foo', 'new');
 
-      expect(thePropertiesOutput()).toEqual([
-         '[s1]',
-         's1foo=1',
-         '[s2]',
-         's2foo=new']);
+      expect(thePropertiesOutput()).toEqual(['[s1]', 's1foo=1', '[s2]', 's2foo=new']);
    });
 
    it('Maintains unique names when adding to an existing section', async () => {
@@ -138,12 +142,7 @@ property4=Value4
 
       properties.set('s1.s1new', 'new');
 
-      expect(thePropertiesOutput()).toEqual([
-         '[s1]',
-         's1foo=1',
-         's1new=new',
-         '[s2]',
-         's2foo=2']);
+      expect(thePropertiesOutput()).toEqual(['[s1]', 's1foo=1', 's1new=new', '[s2]', 's2foo=2']);
    });
 
    it('Writes to the named file', async () => {
@@ -151,10 +150,9 @@ property4=Value4
          [foo]
          bar = baz
       `);
-      expect(thePropertiesOutput()).toEqual(['[foo]', 'bar=baz'])
+      expect(thePropertiesOutput()).toEqual(['[foo]', 'bar=baz']);
 
       await properties.save(outputFile);
       expect(await readFile(outputFile)).toBe('[foo]\nbar=baz\n');
    });
-
 });

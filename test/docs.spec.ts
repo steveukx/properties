@@ -1,7 +1,6 @@
 import { propertiesReader, type Reader } from 'properties-reader';
 
 describe('Docs', () => {
-
    let properties: Reader;
    const FILE = `
       [some]
@@ -13,7 +12,7 @@ describe('Docs', () => {
 
    beforeEach(() => {
       properties = propertiesReader().read(FILE);
-   })
+   });
 
    it('fully qualified', async () => {
       expect(properties.get('some.property.name')).toBe(true);
@@ -35,7 +34,7 @@ describe('Docs', () => {
    it('properties by root object', async () => {
       expect(properties.getByRoot('another')).toEqual({ property: 'hello' });
       expect(properties.getByRoot('some')['property.name']).toBe(true);
-      expect(properties.getByRoot('some.property')['name']).toBe(true);
+      expect(properties.getByRoot('some.property').name).toBe(true);
    });
 
    it('properties as entries - default strings', async () => {
@@ -63,12 +62,6 @@ describe('Docs', () => {
    it('gets the output', async () => {
       const lines = Array.from(properties.out());
 
-      expect(lines).toEqual([
-         '[some]',
-         'property.name=true',
-         '[another]',
-         'property=hello'
-      ]);
+      expect(lines).toEqual(['[some]', 'property.name=true', '[another]', 'property=hello']);
    });
-
 });

@@ -3,7 +3,7 @@ export type PropertiesIterator = Generator<string, void, unknown>;
 export type ExpressAppLike = {
    set(key: string, value: unknown): unknown;
    locals?: Record<string, unknown>;
-}
+};
 
 export type Nullable<T> = T | null;
 
@@ -76,7 +76,7 @@ export interface Reader {
     * @param basePath
     * @param makePaths
     */
-   bindToExpress(app: ExpressAppLike, basePath?: (string | null), makePaths?: boolean): void;
+   bindToExpress(app: ExpressAppLike, basePath?: string | null, makePaths?: boolean): void;
 
    /**
     * @deprecated
@@ -112,7 +112,7 @@ export interface Reader {
    entries: {
       (options?: { parsed?: false | undefined }): MapIterator<[string, string]>;
       (options: { parsed: true }): MapIterator<[string, ParsedValue]>;
-   }
+   };
 
    /**
     * Gets the parsed value for the property at named `key`, when not present returns `null`.
@@ -199,7 +199,7 @@ export interface Reader {
     * (as configured when the propertiesReader was initialised, defaults to
     * utf8).
     */
-   read(input: (string | Buffer)): Reader;
+   read(input: string | Buffer): Reader;
 
    /**
     * Saves the contents of the properties reader to a file at `destFile`,

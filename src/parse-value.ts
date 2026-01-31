@@ -1,7 +1,7 @@
-import { type ParsedValue } from './properties-reader.types';
+import type { ParsedValue } from './properties-reader.types';
 
 export function parseValue(input?: string): ParsedValue {
-   const parsedValue = ('' + input).trim();
+   const parsedValue = String(input).trim();
    switch (parsedValue) {
       case 'undefined':
       case 'null':
@@ -11,8 +11,9 @@ export function parseValue(input?: string): ParsedValue {
       case 'false':
       case 'true':
          return parsedValue === 'true';
-      default:
-         const replacements: Record<string, string> = {'\\n': '\n', '\\r': '\r', '\\t': '\t'};
+      default: {
+         const replacements: Record<string, string> = { '\\n': '\n', '\\r': '\r', '\\t': '\t' };
          return parsedValue.replace(/\\[nrt]/g, (key) => replacements[key]);
+      }
    }
 }

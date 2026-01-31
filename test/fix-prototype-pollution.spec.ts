@@ -1,5 +1,9 @@
 import { propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
+function anObjectLiteral(): Record<string, string> {
+   return {};
+}
+
 describe('prototype-pollution', () => {
    it('does not pollute global Object.prototype', async () => {
       const file = `
@@ -9,13 +13,13 @@ describe('prototype-pollution', () => {
       `;
       const props = propertiesReaderFixture(file);
 
-      expect(({} as any).polluted).toBeUndefined();
+      expect(anObjectLiteral().polluted).toBeUndefined();
       expect(props.path().__proto__.polluted).toBe('polluted');
       expect(props.getRaw('__proto__.polluted')).toBe('polluted');
       expect(props.get('__proto__.polluted')).toBe('polluted');
       expect(props.getRaw('__proto__.parsed')).toBe('true');
       expect(props.get('__proto__.parsed')).toBe(true);
-      expect(({} as any).polluted).toBeUndefined();
+      expect(anObjectLiteral().polluted).toBeUndefined();
    });
 
    it('does not pollute global Object.prototype with assignment to proto', async () => {
@@ -24,9 +28,8 @@ describe('prototype-pollution', () => {
       `;
       const props = propertiesReaderFixture(file);
 
-      expect(({} as any)['']).toBeUndefined();
+      expect(anObjectLiteral()['']).toBeUndefined();
       expect(props.path().__proto__).toBe('10');
-      expect(({} as any)['']).toBeUndefined();
+      expect(anObjectLiteral()['']).toBeUndefined();
    });
-
 });

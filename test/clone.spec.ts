@@ -1,8 +1,8 @@
-import { propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 import type { Reader } from 'properties-reader';
 
-describe('clone', () => {
+import { propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
+describe('clone', () => {
    function output(reader: Reader) {
       return Array.from(reader.out()).join('\n');
    }
@@ -29,5 +29,4 @@ describe('clone', () => {
       expect(p1.get('section.prop')).toBe('value');
       expect(p2.get('section.prop')).toBe('changed');
    });
-
 });

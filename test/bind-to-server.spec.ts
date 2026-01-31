@@ -1,10 +1,10 @@
-import { createTestContext, TestContext } from './__fixtues__/create-test-context';
-import { io } from './__fixtues__/io';
 import { expressBasePath } from 'properties-reader';
+
+import { createTestContext, type TestContext } from './__fixtues__/create-test-context';
+import { io } from './__fixtues__/io';
 import { propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
 describe('bind-to-server', () => {
-
    let context: TestContext;
    const app = {
       set: jest.fn(),
@@ -19,7 +19,7 @@ describe('bind-to-server', () => {
       expect(expressBasePath()).toBe('/foo/bar/');
       expect(expressBasePath('/baz/bat')).toBe('/baz/bat/');
       expect(expressBasePath('/bat/baz/')).toBe('/bat/baz/');
-   })
+   });
 
    it('Creates directories when necessary - absolute paths', async () => {
       const dirPath = context.path('foo');
@@ -28,8 +28,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReaderFixture(file)
-         .bindToExpress(app, null, true);
+      propertiesReaderFixture(file).bindToExpress(app, null, true);
 
       expect(io.isdir(dirPath)).toBe(true);
    });
@@ -41,8 +40,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReaderFixture(file)
-         .bindToExpress(app, null, true);
+      propertiesReaderFixture(file).bindToExpress(app, null, true);
 
       expect(io.isdir(dirPath)).toBe(true);
    });
@@ -57,8 +55,7 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReaderFixture(file)
-         .bindToExpress(app, null, true);
+      propertiesReaderFixture(file).bindToExpress(app, null, true);
 
       expect(io.isdir(dirPath)).toBe(true);
    });
@@ -71,10 +68,8 @@ describe('bind-to-server', () => {
          foo.bar = A Value
       `;
 
-      propertiesReaderFixture(file)
-         .bindToExpress(app, context.root, true);
+      propertiesReaderFixture(file).bindToExpress(app, context.root, true);
 
       expect(io.isdir(dirPath)).toBe(true);
    });
-
 });

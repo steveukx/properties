@@ -1,7 +1,9 @@
 import { dirname, resolve, sep } from 'node:path';
-import { mkdirp } from 'mkdirp';
+
 import { exists, FOLDER } from '@kwsites/file-exists';
-import { ExpressAppLike, Nullable, Reader } from './properties-reader.types';
+import { mkdirp } from 'mkdirp';
+
+import type { ExpressAppLike, Nullable, Reader } from './properties-reader.types';
 
 /**
  * Helper to ensure the provided `basePath` has a trailing slash suffix. When omitted
@@ -49,7 +51,12 @@ export function expressBasePath(basePath?: Nullable<string>): string {
  * @param basePath
  * @param makePaths
  */
-export function bindToExpress(reader: Reader, app: ExpressAppLike, basePath: string, makePaths: boolean) {
+export function bindToExpress(
+   reader: Reader,
+   app: ExpressAppLike,
+   basePath: string,
+   makePaths: boolean
+) {
    for (const [key, value] of reader.entries()) {
       if (value && /\.(path|dir)$/.test(key)) {
          const resolvedValue = resolve(basePath, value);
@@ -62,8 +69,8 @@ export function bindToExpress(reader: Reader, app: ExpressAppLike, basePath: str
             } else if (!exists(directoryPath, FOLDER)) {
                throw new Error('Path is not a directory that already exists');
             }
-         } catch (e) {
-            throw new Error('Unable to create directory ' + value);
+         } catch {
+            throw new Error(`Unable to create directory ${value}`);
          }
       }
 

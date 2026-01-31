@@ -1,4 +1,4 @@
-import { PathProxy } from './properties-reader.types';
+import type { PathProxy } from './properties-reader.types';
 
 type NestedPathBranch = {
    dual: boolean;
@@ -6,7 +6,7 @@ type NestedPathBranch = {
    branches: NestedPath;
    readonly path: string;
    parent: NestedPathBranch | null;
-}
+};
 type NestedPath = Record<string, NestedPathBranch>;
 
 function addLeaf(branch: NestedPathBranch, leaf: string, key: string) {
@@ -17,7 +17,7 @@ function addLeaf(branch: NestedPathBranch, leaf: string, key: string) {
    }
 }
 function addBranch(branch: NestedPathBranch, token: string) {
-   const next = branch.branches[token] ??= childBranch(branch, token);
+   const next = (branch.branches[token] ??= childBranch(branch, token));
    if (branch.leaves.has(token)) {
       next.dual = true;
    }
@@ -30,7 +30,7 @@ function childBranch(parent: NestedPathBranch | null, child = ''): NestedPathBra
       leaves: new Map(),
       branches: Object.create(null),
       path: (parent?.path ? `${parent.path}.` : '') + child,
-      parent
+      parent,
    };
 }
 
@@ -40,17 +40,14 @@ function pathLayers(map: Map<string, string>) {
    for (const key of map.keys()) {
       const tokens = key.split('.');
       const leaf = tokens.pop()!;
-      const path = tokens.reduce(
-         (branch, token) => addBranch(branch, token),
-         paths
-      );
+      const path = tokens.reduce((branch, token) => addBranch(branch, token), paths);
       addLeaf(path, leaf, key);
    }
 
    return paths;
 }
 
-function memoize<T, U>(fn: (cacheKey: T) => U): ((cacheKey: T) => U) {
+function memoize<T, U>(fn: (cacheKey: T) => U): (cacheKey: T) => U {
    const cache = new Map<T, U>();
    return (key) => {
       if (!cache.has(key)) {
@@ -74,33 +71,36 @@ export function propertiesPath(map: Map<string, string>): PathProxy {
          return make(layer.branches[key]);
       }
 
-      return (typeof leaf === 'string') ? map.get(leaf) : undefined
+      return typeof leaf === 'string' ? map.get(leaf) : undefined;
    };
 
    const make = memoize((layer: NestedPathBranch) => {
-      const ownKeys = new Set([
-         ...layer.leaves.keys(),
-         ...Object.keys(layer.branches),
-      ]);
+      const ownKeys = new Set([...layer.leaves.keys(), ...Object.keys(layer.branches)]);
 
-      const target = Object.defineProperties(Object.create(null), Object.fromEntries(
-         [...ownKeys].map(name => [name, {
-            configurable: false,
-            enumerable: true,
-            get () {
-               return value(layer, name);
-            }
-         }])
-      ));
+      const target = Object.defineProperties(
+         Object.create(null),
+         Object.fromEntries(
+            [...ownKeys].map((name) => [
+               name,
+               {
+                  configurable: false,
+                  enumerable: true,
+                  get() {
+                     return value(layer, name);
+                  },
+               },
+            ])
+         )
+      );
 
       if (layer.dual) {
          Object.defineProperty(target, '', {
             configurable: false,
             enumerable: true,
-            get () {
+            get() {
                return value(layer, '');
-            }
-         })
+            },
+         });
       }
 
       return target;

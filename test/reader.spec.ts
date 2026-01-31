@@ -1,20 +1,20 @@
-import { createTestContext, TestContext } from './__fixtues__/create-test-context';
 import type { Reader } from 'properties-reader';
+
+import { createTestContext, type TestContext } from './__fixtues__/create-test-context';
 import { propertiesFromFile, propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
 describe('Reader', () => {
-
    let properties: Reader;
    let context: TestContext;
 
    async function givenTheProperties(content: string) {
-      return properties = await propertiesFromFile(context, content);
+      return (properties = await propertiesFromFile(context, content));
    }
 
-   beforeEach(async () => context = await createTestContext());
+   beforeEach(async () => (context = await createTestContext()));
 
    it('Reads properties from a buffer', () => {
-      const content = Buffer.from("property.key = value");
+      const content = Buffer.from('property.key = value');
       properties = propertiesReaderFixture(content);
 
       expect(properties.get('property.key')).toBe('value');
@@ -29,10 +29,13 @@ describe('Reader', () => {
       await givenTheProperties('some.property=Value');
 
       properties.append(
-         await context.file('more-props.ini', `
+         await context.file(
+            'more-props.ini',
+            `
             [section]
             some.property = Another Value
-         `)
+         `
+         )
       );
 
       expect(properties.get('section.some.property')).toBe('Another Value');
@@ -45,10 +48,14 @@ describe('Reader', () => {
          b = true
       `);
 
-      assertionsFor(jest.fn(), properties, (s, c) => properties.each(s));
-      assertionsFor(jest.fn(), {a: 'bcd'}, (s, c) => properties.each(s, c));
+      assertionsFor(jest.fn(), properties, (s) => properties.each(s));
+      assertionsFor(jest.fn(), { a: 'bcd' }, (s, c) => properties.each(s, c));
 
-      function assertionsFor<T, F extends jest.Mock>(theSpy: F, theContext: T, run: (s: F, c: T) => void) {
+      function assertionsFor<T, F extends jest.Mock>(
+         theSpy: F,
+         theContext: T,
+         run: (s: F, c: T) => void
+      ) {
          run(theSpy, theContext);
 
          expect(theSpy).toHaveBeenCalledWith('a', '123');
@@ -102,10 +109,12 @@ describe('Reader', () => {
 
    it('Sets properties into an app', async () => {
       const set = jest.fn();
-      (await givenTheProperties(`
+      (
+         await givenTheProperties(`
          some.property=Value
          foo.bar = A Value
-      `)).bindToExpress({set});
+      `)
+      ).bindToExpress({ set });
 
       expect(set).toHaveBeenCalledWith('properties', properties);
       expect(set).toHaveBeenCalledWith('some.property', 'Value');
@@ -148,7 +157,7 @@ describe('Reader', () => {
       });
       expect(properties.getByRoot('root.sect')).toEqual({
          a: 1,
-         b: 'bar'
+         b: 'bar',
       });
    });
 
@@ -164,11 +173,15 @@ describe('Reader', () => {
 
       expect(properties.getByRoot('root.sect')).toEqual({
          a: 1,
-         c: false
+         c: false,
       });
 
+      type InvalidProperties = Reader & {
+         getByRoot(): Record<string, unknown>;
+      };
+
       // invalid usage: omission of root returns empty object
-      expect((properties as any).getByRoot()).toEqual({})
+      expect((properties as InvalidProperties).getByRoot()).toEqual({});
    });
 
    it('getAllProperties returns properties map', async () => {
@@ -181,7 +194,7 @@ describe('Reader', () => {
 
       expect(properties.getAllProperties()).toEqual({
          'root.a.b': '1',
-         'some.thing': 'Else'
+         'some.thing': 'Else',
       });
    });
 
@@ -198,7 +211,7 @@ describe('Reader', () => {
 
       expect(properties.getAllProperties()).toEqual({
          'root.a.b': 'Hello',
-         'some.thing': 'Else'
+         'some.thing': 'Else',
       });
    });
 
@@ -208,5 +221,4 @@ describe('Reader', () => {
       expect(Object.keys(properties.path())).toEqual(['some']);
       expect(Object.keys(properties.path().some)).toEqual(['property']);
    });
-
 });

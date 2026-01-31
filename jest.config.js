@@ -44,6 +44,7 @@ module.exports = {
       "**/test/**/*.spec.*"
    ],
    "moduleNameMapper": {
-      "^(.*/__fixtues__/.*)\\.ts$": "$1"
+      "^(.*/__fixtues__/.*)\\.ts$": "$1",
+      "^properties-reader$": "<rootDir>/"
    }
 };

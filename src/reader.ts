@@ -1,19 +1,20 @@
 import { readFileSync } from 'node:fs';
-import { propertiesPath } from './properties-path';
-import { ExpressAppLike, Reader, Value } from './properties-reader.types';
+
 import { bindToExpress, expressBasePath } from './bind-to-express';
 import { getByRoot, parsedEntries } from './get-by-root';
-import { parseValue } from './parse-value';
 import { output } from './output';
+import { parseValue } from './parse-value';
+import { propertiesPath } from './properties-path';
+import type { ExpressAppLike, Reader, Value } from './properties-reader.types';
 import { save } from './save';
 
 type ReadLineTask = {
    section: string;
    properties: Map<string, string>;
-}
+};
 
 function newTask(): ReadLineTask {
-   return {section: '', properties: new Map()};
+   return { section: '', properties: new Map() };
 }
 
 function append(sourceFile: string | undefined | null, encoding: BufferEncoding, task = newTask()) {
@@ -26,12 +27,14 @@ function append(sourceFile: string | undefined | null, encoding: BufferEncoding,
 }
 
 function read(input: string, task: ReadLineTask): ReadLineTask {
-   return String(input).split('\n').reduce<ReadLineTask>(
-      (task, line) => {
-         return readLine(line, task);
-      },
-      {...task, section: ''}
-   );
+   return String(input)
+      .split('\n')
+      .reduce<ReadLineTask>(
+         (task, line) => {
+            return readLine(line, task);
+         },
+         { ...task, section: '' }
+      );
 }
 
 function readLine(line: string, task: ReadLineTask): ReadLineTask {
@@ -46,7 +49,7 @@ function readLine(line: string, task: ReadLineTask): ReadLineTask {
    if (section) {
       task.section = section[1];
    } else if (property) {
-      const currentSection = task.section ? task.section + '.' : '';
+      const currentSection = task.section ? `${task.section}.` : '';
       task.properties.set(currentSection + property[1].trim(), property[3].trim());
    }
 
@@ -55,30 +58,31 @@ function readLine(line: string, task: ReadLineTask): ReadLineTask {
 
 type AppenderOptions = {
    allowDuplicateSections: boolean;
-}
+};
 
 type WriterOptions = {
    saveSections: boolean;
-}
+};
 
 export type PropertiesFactoryOptions = {
    encoding?: BufferEncoding;
    sourceFile?: string;
-} & Partial<AppenderOptions> & Partial<WriterOptions>;
+} & Partial<AppenderOptions> &
+   Partial<WriterOptions>;
 
-export const createPropertiesReader = (
-   {
-      sourceFile,
-      encoding = 'utf-8',
-      allowDuplicateSections = false,
-      saveSections = true,
-   }: PropertiesFactoryOptions = {}
-) => {
+export const createPropertiesReader = ({
+   sourceFile,
+   encoding = 'utf-8',
+   allowDuplicateSections = false,
+   saveSections = true,
+}: PropertiesFactoryOptions = {}) => {
    const store = append(sourceFile, encoding);
 
    function entries(options?: { parsed?: false | undefined }): MapIterator<[string, string]>;
    function entries(options: { parsed: true }): MapIterator<[string, null | Value]>;
-   function entries(options: { parsed?: boolean } = {}): MapIterator<[string, string | null | Value]> {
+   function entries(
+      options: { parsed?: boolean } = {}
+   ): MapIterator<[string, string | null | Value]> {
       return options.parsed === true ? parsedEntries(store.properties) : store.properties.entries();
    }
 
@@ -151,9 +155,8 @@ export const createPropertiesReader = (
       set(key: string, value: string | number | boolean) {
          store.properties.set(key, String(value));
          return instance;
-      }
+      },
    };
 
    return instance;
-
-}
+};

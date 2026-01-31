@@ -1,5 +1,6 @@
-import { join } from 'path';
-import { realpathSync } from 'fs';
+import { realpathSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { mkdir, mkdtemp, writeFile } from './io';
 
 export interface TestContext {
@@ -11,21 +12,21 @@ export interface TestContext {
    readonly rootResolvedPath: string;
 }
 
-export async function createTestContext (): Promise<TestContext> {
+export async function createTestContext(): Promise<TestContext> {
    const root = await mkdtemp();
 
    const context: TestContext = {
-      path (...segments: string[]) {
+      path(...segments: string[]) {
          return join(root, ...segments);
       },
-      async dir (...paths: string[]) {
+      async dir(...paths: string[]) {
          if (!paths.length) {
             return root;
          }
 
          return mkdir(context.path(...paths));
       },
-      async file (path: string | string[], content = `File content ${ path }`) {
+      async file(path: string | string[], content = `File content ${path}`) {
          if (Array.isArray(path)) {
             await context.dir(path[0]);
          }
@@ -33,15 +34,15 @@ export async function createTestContext (): Promise<TestContext> {
          const pathArray = Array.isArray(path) ? path : [path];
          return writeFile(context.path(...pathArray), content);
       },
-      async files (...paths: (string | string[])[]) {
+      async files(...paths: (string | string[])[]) {
          for (const path of paths) {
             await context.file(path as string | string[]);
          }
       },
-      get root () {
+      get root() {
          return root;
       },
-      get rootResolvedPath () {
+      get rootResolvedPath() {
          return realpathSync(root);
       },
    };

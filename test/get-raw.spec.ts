@@ -1,7 +1,6 @@
 import { propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
 describe('getRaw', () => {
-
    it('Handles missing values', async () => {
       const reader = propertiesReaderFixture();
       expect(reader.getRaw('a')).toBe(null);
@@ -24,5 +23,4 @@ describe('getRaw', () => {
       expect(properties.getRaw('a')).toBe('123');
       expect(properties.getRaw('d')).toBe('0.1');
    });
-
 });

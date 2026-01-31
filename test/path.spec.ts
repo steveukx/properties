@@ -1,7 +1,6 @@
 import { propertiesReaderFixture } from './__fixtues__/mock-properties-factory';
 
 describe('path', () => {
-
    it('Properties can be read back via their dot notation names', async () => {
       const properties = propertiesReaderFixture(`
          some.property=Value
@@ -18,8 +17,8 @@ describe('path', () => {
          foo.bar = A Value
       `);
 
-      expect(() => (properties.path() as any).invalid.property).toThrow();
-      expect((properties.path() as any).some.invalid).toBeUndefined();
+      expect(() => properties.path().invalid.property).toThrow();
+      expect(properties.path().some.invalid).toBeUndefined();
       expect(properties.path().invalid).toBeUndefined();
    });
 
@@ -32,7 +31,7 @@ describe('path', () => {
       `);
       const path = properties.path();
 
-      expect(path.alpha).toEqual({ '': 'aaa', 'beta': 'bbb'});
+      expect(path.alpha).toEqual({ '': 'aaa', 'beta': 'bbb' });
       expect(path.alpha?.beta).toEqual('bbb');
    });
 
@@ -45,9 +44,8 @@ describe('path', () => {
       `);
 
       const path = properties.path();
-      expect(path.gamma).toEqual({ delta: { '': 'ddd', 'epsilon': 'eee' }});
+      expect(path.gamma).toEqual({ delta: { '': 'ddd', 'epsilon': 'eee' } });
       expect(path.alpha.beta).toEqual('bbb');
       expect(path.alpha).toEqual({ '': 'aaa', 'beta': 'bbb' });
    });
-
 });

@@ -1,6 +1,10 @@
-import { PropertiesIterator } from './properties-reader.types';
+import type { PropertiesIterator } from './properties-reader.types';
 
-export function output(properties: Map<string, string>, allowDuplicateSections: boolean, saveSections: boolean): PropertiesIterator {
+export function output(
+   properties: Map<string, string>,
+   allowDuplicateSections: boolean,
+   saveSections: boolean
+): PropertiesIterator {
    if (!allowDuplicateSections) {
       properties = collapseSections(properties);
    }
@@ -47,4 +51,3 @@ function collapseSections(properties: Map<string, string>) {
 
    return new Map(Array.from(sections.values()).flat());
 }
-
