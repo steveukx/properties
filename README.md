@@ -127,7 +127,7 @@ To get the original value without any parsing / type coercion applied,
 use `properties.getRaw(key)`.
 
 
-Upgrading to V3
+Upgrading V2 to V3
 ===============
 
 - Import the `propertiesReader` named factory function instead of the
@@ -135,10 +135,14 @@ Upgrading to V3
 
   ```
   // v2
-  import propertiesReader from 'properties-reader';
+  const propertiesReader = require('properties-reader');
   
-  // v3
+  // v3 - default and named import
+  import propertiesReader from 'properties-reader';
   import { propertiesReader } from 'properties-reader';
+  
+  // v3 - named property on require
+  const { propertiesReader } = require('properties-reader');
   ```
 
 - All factory arguments are now supplied in a single options object
