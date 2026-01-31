@@ -63,9 +63,9 @@
   "scripts": {
     "build": "tsup",
     "build:pkg": "node .ci/package-json.mjs",
-    "prepublishOnly": "yarn build:pkg",
     "clean": "git clean -fxd coverage dist",
     "prepare": "npm run build",
+    "prepublishOnly": "yarn build:pkg",
     "preversion": "npm test",
     "postversion": "npm publish && git push && git push --tags",
     "test": "jest --coverage"
