@@ -1,6 +1,6 @@
 import { type FileHandle, open } from 'node:fs/promises';
 
-import type { PropertiesIterator } from './properties-reader.types';
+import type { PropertiesIterator } from '../properties-reader.types';
 
 export async function save(destFile: string, props: PropertiesIterator) {
    let pointer: null | FileHandle = null;

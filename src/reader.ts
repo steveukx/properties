@@ -1,60 +1,12 @@
-import { readFileSync } from 'node:fs';
-
+import { append } from './actions/append';
+import { read } from './actions/read';
+import { save } from './actions/save';
 import { bindToExpress, expressBasePath } from './bind-to-express';
 import { getByRoot, parsedEntries } from './get-by-root';
 import { output } from './output';
 import { parseValue } from './parse-value';
 import { propertiesPath } from './properties-path';
 import type { ExpressAppLike, Reader, Value } from './properties-reader.types';
-import { save } from './save';
-
-type ReadLineTask = {
-   section: string;
-   properties: Map<string, string>;
-};
-
-function newTask(): ReadLineTask {
-   return { section: '', properties: new Map() };
-}
-
-function append(sourceFile: string | undefined | null, encoding: BufferEncoding, task = newTask()) {
-   if (!sourceFile) {
-      return task;
-   }
-
-   const file = readFileSync(sourceFile, encoding);
-   return read(file, task);
-}
-
-function read(input: string, task: ReadLineTask): ReadLineTask {
-   return String(input)
-      .split('\n')
-      .reduce<ReadLineTask>(
-         (task, line) => {
-            return readLine(line, task);
-         },
-         { ...task, section: '' }
-      );
-}
-
-function readLine(line: string, task: ReadLineTask): ReadLineTask {
-   const trimmed = line.trim();
-   if (!trimmed) {
-      return task;
-   }
-
-   const section = /^\[([^=]+)]$/.exec(trimmed);
-   const property = !section && /^([^#=]+)(={0,1})(.*)$/.exec(trimmed);
-
-   if (section) {
-      task.section = section[1];
-   } else if (property) {
-      const currentSection = task.section ? `${task.section}.` : '';
-      task.properties.set(currentSection + property[1].trim(), property[3].trim());
-   }
-
-   return task;
-}
 
 type AppenderOptions = {
    allowDuplicateSections: boolean;
