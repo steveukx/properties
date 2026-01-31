@@ -65,7 +65,7 @@
     "build:pkg": "node .ci/package-json.mjs",
     "clean": "git clean -fxd coverage dist",
     "prepare": "npm run build",
-    "prepublishOnly": "yarn build:pkg",
+    "prepublishOnly": "yarn build && yarn build:pkg",
     "preversion": "npm test",
     "postversion": "npm publish && git push && git push --tags",
     "test": "jest --coverage"
